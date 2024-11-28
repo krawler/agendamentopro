@@ -1,0 +1,55 @@
+{% load static %}
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="{% static 'assets/bootstrap/js/popper.min.js' %} "></script>
+<script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %} "></script>
+<script defer src="{% static 'assets/font-awesome/js/all.js' %} "></script>
+<script src="{% static 'assets/custom/js/scripts.js' %} "></script>
+
+
+{% if pagina_cadastro %}
+
+<script src="{% static 'assets/custom/js/password_strength.js' %} "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+
+        $("#id_data_nascimento").datepicker({
+            format: "dd/mm/yyyy",
+            language: "pt-BR"
+        });
+
+        $("#id_cep").mask("00000-000");
+        $("id_data_nascimento").mask("00/00/0000");
+        $("#id_cpf").mask("000.000.000-00");
+
+        $("#id_password").passwordStrengthIndicator();
+        $("#id_password2").passwordStrengthIndicator();
+    });  
+</script>
+
+{% endif %}
+
+<script>
+        
+    var calendarInstance1 = new calendarJs( "calendar1", 
+                                            __TRANSLATION_OPTIONS, { 
+                                            exportEventsEnabled: true,  
+                                            openInFullScreenMode: true,
+                                            fullScreenModeEnabled: false,
+                                            useLocalStorageForEvents: true    
+                                        });
+    
+    calendarInstance1.setOptions( {
+        views: {
+                fullMonth: {
+                    maximumEventsPerDayDisplay: 10
+                }
+            },  
+            visibleDays: [ 0, 1, 2, 3, 4, 5 ]
+        });
+</script>

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load omfilters %}
+
+{% load static %}
+
+{% block conteudo %}
+
+	<style type="text/css" >
+		html, body{
+			margin:0;
+			padding:0;
+			height:100%;
+			overflow:hidden;
+		}
+		.yellow_section {
+			background-color: #ffa749;
+			opacity: 0.25;
+		}
+	</style>
+
+    <div class="container d-flex vh-100"> 
+
+    <div class="header largura_toda" >
+        <div class="col">   
+            <div class="row">
+                <div id="calendar1"></div>
+            </div>
+        </div>    
+    </div>
+
+</div>
+{% endblock %}
