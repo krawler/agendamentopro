@@ -5252,7 +5252,7 @@ function calendarJs(ol, pl, ql) {
     AdicionaAgendamento(c);
     
     $("#dialog").dialog({height: 600,
-      width: 550,
+      width: 450,
       modal: true,});
     
     var f = !1;
@@ -5470,9 +5470,6 @@ function calendarJs(ol, pl, ql) {
     
     localStorage.setItem('from', jsonEvent.from);
     localStorage.setItem('to', jsonEvent.to);
-    localStorage.setItem('from', jsonEvent);
-    localStorage.setItem('from', jsonEvent);
-              
 
     $.ajaxSetup({
         headers:
