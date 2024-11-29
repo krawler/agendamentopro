@@ -8,11 +8,7 @@
             keys: true,
         });
 
-        $(document).on('keypress',function(e) {
-            if(e.which == 13) {
-                $("#dialog").dialog( "close" );
-            }
-        });
+        $('#table_id').css('width', '100%');
 
         $(".dt-layout-cell").first().hide();
         $("#dt-search-0").css('width','80%');
@@ -27,18 +23,16 @@
 
         });
         
-        strJsonEvent = localStorage.getItem('strJsonEvent');
-        jsonNewEvent = JSON.parse(strJsonEvent);
-        id_novo_evento = jsonNewEvent[0].pk;
 
-        
-        table.on('dblclick', 'td', function (e) {
-            
+        function atualizaPessoa(){
             $.ajaxSetup({
                 headers:
                 { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
             });
 
+            strJsonEvent = localStorage.getItem('strJsonEvent');
+            jsonNewEvent = JSON.parse(strJsonEvent);
+            id_novo_evento = jsonNewEvent[0].pk;
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -51,18 +45,29 @@
                 },
                 success: function(jsonData) { 
                     localStorage.setItem('strJsonEvent', jsonData);
+                    strJsonEvent = localStorage.getItem('strJsonEvent');
                 }
             });
 
             $("#dialog").dialog("close");
+        }
+        
+        table.on('dblclick', 'td', function (e) {
+            atualizaPessoa();            
         });  
+
+        $(document).on('keypress',function(e) {
+            if(e.which == 13) {
+                atualizaPessoa();
+            }
+        });
 
 } );  
 </script>
 
 <meta name="csrf-token" content="{{ csrf_token }}">
 
-<div class="container d-flex vh-100"> 
+<div class="container vh-100"> 
 
     <div class="card borderless">
         <div class="card-body">
