@@ -1,0 +1,89 @@
+<script>
+    $(document).ready(function(){
+        
+        $.noConflict();
+
+        const table = $('#table_id').DataTable({
+            colReorder: true,
+            keys: true,
+        });
+
+        $(document).on('keypress',function(e) {
+            if(e.which == 13) {
+                $("#dialog").dialog( "close" );
+            }
+        });
+
+        $(".dt-layout-cell").first().hide();
+        $("#dt-search-0").css('width','80%');
+        $(".card-body").css('padding','0.75rem');
+
+        id_perfil = null;
+        table.on('click', 'td', function (e) {
+            row = $(this).parent('tr');
+            id_perfil = row.attr('perfil_id');
+            nomeperfil_selecionado = row.children('td.nome_perfil').html();
+            emailperfil_selecionado = row.children('td.email_perfil').html();
+
+        });
+        
+        strJsonEvent = localStorage.getItem('strJsonEvent');
+        jsonNewEvent = JSON.parse(strJsonEvent);
+        id_novo_evento = jsonNewEvent[0].pk;
+
+        
+        table.on('dblclick', 'td', function (e) {
+            
+            $.ajaxSetup({
+                headers:
+                { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+            });
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "http://localhost:8000/atualizacliente",
+                data: {
+                    "perfil_id": id_perfil,
+                    "evento_id": id_novo_evento,
+                    "ultima_atualizacao" : ultima_atualizacao,
+                    "csrfmiddlewaretoken": $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(jsonData) { 
+                    localStorage.setItem('strJsonEvent', jsonData);
+                }
+            });
+
+            $("#dialog").dialog("close");
+        });  
+
+} );  
+</script>
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+<div class="container d-flex vh-100"> 
+
+    <div class="card borderless">
+        <div class="card-body">
+            <table id="table_id" class="display">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>email</th>
+                
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for perfil in perfis %}
+                    <tr perfil_id="{{perfil.id}}">
+                        <td class="nome_perfil">{{perfil.usuario.first_name}}</td>             
+                        <td class="email_perfil">{{perfil.usuario.email}}</td>                       
+            
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>        
+    </div>
+</div>
