@@ -5,13 +5,14 @@ from django.http import HttpResponse, JsonResponse
 from .models import Agendamento
 from perfil.models import PerfilUsuario
 from . import agenda_service
+from datetime import datetime
 
 class Principal(View):
     
     def get(self, *args, **kwargs):
         
         context = {
-            'agendamentos' : Agendamento.objects.all(),
+            'agendamentos' : Agendamento.objects.filter(data_evento=datetime.today()),
             'perfis' : PerfilUsuario.objects.all() 
         }
 
@@ -35,6 +36,10 @@ class Atualiza_Cliente(View):
      def post(self, *args, **kwargs):
         perfil_id = self.request.POST.get('perfil_id');
         evento_id = self.request.POST.get('evento_id');
-        agendamento = Agendamento.objects.filter(id=evento_id)
-        json_data = serializers.serialize('json', agendamento)
+        user_perfil_pessoa = PerfilUsuario.objects.filter(id=perfil_id).first()
+        qs_agendamento = Agendamento.objects.filter(id=evento_id)
+        agendamento = qs_agendamento.first()
+        agendamento.pessoa = user_perfil_pessoa.usuario
+        agendamento.save()
+        json_data = serializers.serialize('json', qs_agendamento)
         return JsonResponse(json_data, safe=False)
