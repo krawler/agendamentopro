@@ -5,5 +5,5 @@ app_name = 'agenda'
 
 urlpatterns = [
     path('', views.Principal.as_view(), name="principal"),
-    #path('concluido/', views.Cadastro_concluido.as_view(), name="cadastro_concluido"),
+    path('atualizacliente', views.Atualiza_Cliente.as_view(), name="atualizacliente"),
 ]
