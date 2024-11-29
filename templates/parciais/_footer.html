@@ -1,6 +1,6 @@
 {% load static %}
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <script src="{% static 'assets/bootstrap/js/popper.min.js' %} "></script>
 <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %} "></script>
@@ -34,16 +34,17 @@
 
 {% endif %}
 
+<script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
 <script>
         
     var calendarInstance1 = new calendarJs( "calendar1", 
                                             __TRANSLATION_OPTIONS, { 
                                             exportEventsEnabled: true,  
                                             openInFullScreenMode: true,
-                                            fullScreenModeEnabled: false,
+                                            fullScreenModeEnabled: true,
                                             useLocalStorageForEvents: true    
                                         });
-    
+
     calendarInstance1.setOptions( {
         views: {
                 fullMonth: {
@@ -52,4 +53,5 @@
             },  
             visibleDays: [ 0, 1, 2, 3, 4, 5 ]
         });
+
 </script>
