@@ -8,6 +8,8 @@
 
 {% block conteudo %}
 
+<meta name="csrf-token" content="{{ csrf_token }}">
+
 	<style type="text/css" >
 		html, body{
 			margin:0;
@@ -21,11 +23,14 @@
 		}
 	</style>
 
-    <div class="container d-flex vh-100"> 
+    <div class="container d-flex vh-100" id="container" data-token="{{csrf_token}}"> 
 
     <div class="header largura_toda" >
         <div class="col">   
             <div class="row">
+				<div id="dialog" title="Busca pessoa" style="display:none;">
+					{% include 'parciais/_tabela_pessoa.html' %}
+				</div>
                 <div id="calendar1"></div>
             </div>
         </div>    
