@@ -5201,7 +5201,7 @@ function calendarJs(ol, pl, ql) {
   //terceiro parametro booleano
   //quarto parametro undefined
   u.addEvent = function(a, c, d, e) {
-    AdicionaAgendamento(a);
+    
     var f = !1;
     if (!w && (e = v(e, !0), W(a.from) && (a.from = new Date(a.from)), W(a.to) && (a.to = new Date(a.to)), W(a.repeatEnds) && (a.repeatEnds = new Date(a.repeatEnds)), W(a.created) && (a.created = new Date(a.created)), W(a.lastUpdated) && (a.lastUpdated = new Date(a.lastUpdated)), a.color === b.defaultEventBackgroundColor && (a.color = null), a.colorText === b.defaultEventTextColor && (a.colorText = null), a.colorBorder === b.defaultEventBorderColor && (a.colorBorder = null), a.from <= a.to)) {
       var g = a.from;
@@ -5234,6 +5234,7 @@ function calendarJs(ol, pl, ql) {
     return f;
   };
   u.updateEvents = function(a, c, d) {
+    
     if (!w) {
       c = v(c, !0);
       d = v(d, !0);
@@ -5247,6 +5248,13 @@ function calendarJs(ol, pl, ql) {
     return u;
   };
   u.updateEvent = function(a, c, d, e) {
+    
+    AdicionaAgendamento(c);
+    
+    $("#dialog").dialog({height: 600,
+      width: 550,
+      modal: true,});
+    
     var f = !1;
     !w && (f = u.removeEvent(a, !1, !1)) && (d = v(d, !0), e = v(e, !0), f = u.addEvent(c, d, !1), qb(), f && e && A(b.events.onEventUpdated, c));
     return f;
@@ -5441,20 +5449,52 @@ function calendarJs(ol, pl, ql) {
   })(document, window, navigator, Math, JSON);
 
   function AdicionaAgendamento(jsonEvent){
+
     datahora_inicio = jsonEvent.from; 
     datahora_final = jsonEvent.to; 
     datahora_criacao = new Date(jsonEvent.created); 
     ultima_atualizacao = new Date(jsonEvent.lastUpdated) ; 
+
+    data_evento =  datahora_inicio.getFullYear() + '-'  + 
+                    (datahora_inicio.getMonth() + 1) + '-' + 
+                    datahora_inicio.getDate();
     
-    return $.ajax({
-      type: "GET",
+    hora_inicio = datahora_inicio.getHours() + ':'  + 
+                  datahora_inicio.getMinutes() + ':' + 
+                  datahora_inicio.getSeconds();
+    
+    
+    hora_final = datahora_final.getHours() + ':'  + 
+                  datahora_final.getMinutes() + ':' + 
+                  datahora_final.getSeconds();
+    
+    localStorage.setItem('from', jsonEvent.from);
+    localStorage.setItem('to', jsonEvent.to);
+    localStorage.setItem('from', jsonEvent);
+    localStorage.setItem('from', jsonEvent);
+              
+
+    $.ajaxSetup({
+        headers:
+        { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+    });
+
+    $.ajax({
+      type: "POST",
       dataType: "json",
-      url: "{% url 'pedido:itens_pedido' %}",
-      data: "pedidoid=" + id,
+      url: "http://localhost:8000",
+      data: {
+          "hora_inicio": hora_inicio,
+          "hora_final": hora_final,
+          "data_evento": data_evento,
+          "ultima_atualizacao" : ultima_atualizacao,
+          "csrfmiddlewaretoken": $('meta[name="csrf-token"]').attr('content')
+      },
       success: function(jsonData) { 
-          return jsonData;
+        localStorage.setItem('strJsonEvent', jsonData);
       }
   });
+    
 
     //return true;
   }
