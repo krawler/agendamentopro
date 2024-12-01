@@ -200,9 +200,9 @@ class Login(View):
                 }
                     
         if carrinho_sessao is not None:
-            return redirect('produto:carrinho')             
+            return redirect('agenda:principal')             
             
-        return redirect('produto:lista')        
+        return redirect('agenda:principal')        
 
 
 class Logout(View):
