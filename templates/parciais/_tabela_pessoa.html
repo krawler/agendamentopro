@@ -15,6 +15,7 @@
         $(".card-body").css('padding','0.75rem');
 
         id_perfil = null;
+        nomeperfil_selecionado=null;
         table.on('click', 'td', function (e) {
             row = $(this).parent('tr');
             id_perfil = row.attr('perfil_id');
@@ -33,6 +34,15 @@
             strJsonEvent = localStorage.getItem('strJsonEvent');
             jsonNewEvent = JSON.parse(strJsonEvent);
             id_novo_evento = jsonNewEvent[0].pk;
+
+            let jsonIdDiv = JSON.parse(jsonNewEvent[0].fields.json_evento);
+            let divNovoEvento = $('div[event-id="'+jsonIdDiv.id+'"]');
+            tipoServico = "corte de cabelo"; 
+            titulo_com_perfil = 'Serviço: ' + tipoServico + ' / ' + 'Nome: ' + nomeperfil_selecionado
+            jsonIdDiv.title = titulo_com_perfil;
+                                    
+            //divNovoEvento.html(jsonIdDiv.title +jsonIdDiv.from);
+            
             $.ajax({
                 type: "POST",
                 dataType: "json",
@@ -40,6 +50,7 @@
                 data: {
                     "perfil_id": id_perfil,
                     "evento_id": id_novo_evento,
+                    "jsonEvent": jsonIdDiv,
                     "ultima_atualizacao" : ultima_atualizacao,
                     "csrfmiddlewaretoken": $('meta[name="csrf-token"]').attr('content')
                 },
@@ -56,7 +67,7 @@
             atualizaPessoa();            
         });  
 
-        $(document).on('keypress',function(e) {
+        $("#table_id").on('keypress',function(e) {
             if(e.which == 13) {
                 atualizaPessoa();
             }
@@ -84,7 +95,6 @@
                     <tr perfil_id="{{perfil.id}}">
                         <td class="nome_perfil">{{perfil.usuario.first_name}}</td>             
                         <td class="email_perfil">{{perfil.usuario.email}}</td>                       
-            
                     </tr>
                     {% endfor %}
                 </tbody>
