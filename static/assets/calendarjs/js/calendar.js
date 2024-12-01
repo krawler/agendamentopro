@@ -1226,6 +1226,8 @@ function calendarJs(ol, pl, ql) {
       b.manualEditingEnabled && (c.ondblclick = function() {
         if (b.useTemplateWhenAddingNewEvent) {
           var C = yd(m, m);
+          console.log(C);
+          //criacao de um novo evento
           T(C);
           zd();
         } else {
@@ -5052,10 +5054,10 @@ function calendarJs(ol, pl, ql) {
     b.jumpToDateTitle = p(b.jumpToDateTitle, "Jump To Date");
     b.goText = p(b.goText, "Go");
     mg(b.eventTypeNormalText, "Normal", 0);
-    mg(b.eventTypeMeetingText, "Meeting", 1);
-    mg(b.eventTypeBirthdayText, "Birthday", 2);
-    mg(b.eventTypeHolidayText, "Holiday", 3);
-    mg(b.eventTypeTaskText, "Task", 4);
+    mg(b.eventTypeMeetingText, "Cabelo e barba", 1);
+    mg(b.eventTypeBirthdayText, "Barba", 2);
+    mg(b.eventTypeHolidayText, "Sombrancelha", 3);
+    mg(b.eventTypeTaskText, "Outro", 4);
     Li();
   }
   function mg(a, c, d) {
@@ -5450,6 +5452,11 @@ function calendarJs(ol, pl, ql) {
 
   function AdicionaAgendamento(jsonEvent){
 
+    //evento =  JSON.parse(localStorage.getItem(jsonEvent.from.getTime()+'-'+jsonEvent.to.getTime()));
+    
+    var strJsonEvent = JSON.stringify(jsonEvent);
+    localStorage.setItem(jsonEvent.from.getTime()+'-'+jsonEvent.to.getTime(), strJsonEvent);
+
     datahora_inicio = jsonEvent.from; 
     datahora_final = jsonEvent.to; 
     datahora_criacao = new Date(jsonEvent.created); 
@@ -5468,8 +5475,6 @@ function calendarJs(ol, pl, ql) {
                   datahora_final.getMinutes() + ':' + 
                   datahora_final.getSeconds();
     
-    localStorage.setItem('from', jsonEvent.from);
-    localStorage.setItem('to', jsonEvent.to);
 
     $.ajaxSetup({
         headers:
@@ -5485,6 +5490,7 @@ function calendarJs(ol, pl, ql) {
           "hora_final": hora_final,
           "data_evento": data_evento,
           "ultima_atualizacao" : ultima_atualizacao,
+          "jsonEvent" : JSON.stringify(jsonEvent),
           "csrfmiddlewaretoken": $('meta[name="csrf-token"]').attr('content')
       },
       success: function(jsonData) { 
@@ -5493,7 +5499,6 @@ function calendarJs(ol, pl, ql) {
   });
     
 
-    //return true;
-  }
+}
 
 };
