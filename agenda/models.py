@@ -12,3 +12,4 @@ class Agendamento(models.Model):
     hora_final = models.TimeField(default=timezone.now().time())
     observacao = models.TextField(max_length=500, null=True)
     desativado = models.BooleanField(default=False)
+    json_evento = models.TextField(max_length=1000)
