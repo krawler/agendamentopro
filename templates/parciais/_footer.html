@@ -37,13 +37,10 @@
 
 <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
 <script>
-        
+
     var calendarInstance1 = new calendarJs( "calendar1", 
                                             __TRANSLATION_OPTIONS, { 
-                                            exportEventsEnabled: true,  
-                                            openInFullScreenMode: true,
-                                            fullScreenModeEnabled: true,
-                                            useLocalStorageForEvents: true    
+                                            showExtraTitleBarButton : false    
                                         });
 
     calendarInstance1.setOptions( {
@@ -52,8 +49,17 @@
                     maximumEventsPerDayDisplay: 10
                 }
             },  
-            visibleDays: [ 0, 1, 2, 3, 4, 5 ]
-        });
+        visibleDays: [ 0, 1, 2, 3, 4, 5 ],
+        useLocalStorageForEvents: true,
+        exportEventsEnabled: true,
+        dragAndDropForEventsEnabled: true,
+        tooltipDelay: 500,
+        defaultEventBackgroundColor: '#006bc8',
+        allowHtmlInDisplay: true,
+        defaultEventDuration: 45,
+        manualEditingEnabled: true
+    });
+        
     
     objEventos = []
     agendamentos = JSON.parse($("#agendamentos").val());
@@ -61,5 +67,6 @@
         objEventos.push(JSON.parse(agendamento.fields.json_evento));
     });
     calendarInstance1.addEvents(objEventos);
-
+    calendarInstance1.turnOnFullScreen();
+    
 </script>
