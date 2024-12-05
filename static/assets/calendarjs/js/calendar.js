@@ -5234,10 +5234,6 @@ function calendarJs(ol, pl, ql) {
         d && A(b.events.onEventAdded, a);
         c && (qb(), Sb(), La(), ra());
       }
-    }else{
-      console.log(c);
-      if(d==true)
-          AdicionaAgendamento(a);
     }
     return f;
   };
@@ -5574,7 +5570,7 @@ function AtualizaAgendamento(jsonEvent){
     $.ajax({
         type: "POST",
         dataType: "json",
-        url: "http://localhost:8000/atualizaevento",
+        url: "http://localhost:8000",
         data: {
             "hora_inicio": hora_inicio,
             "hora_final": hora_final,
