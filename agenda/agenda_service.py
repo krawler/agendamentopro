@@ -26,6 +26,22 @@ class Agenda_Service():
 
         return agenda
 
+    def atualiza_evento(self, json_event, id_jsondiv_evento, dt_inicio, dt_final):
+        
+        data_evento = datetime.now()
+        hora_inicio = datetime.strptime(dt_inicio, '%H:%M:%S')
+        hora_final = datetime.strptime(dt_final, '%H:%M:%S')
+
+        agendamento = Agendamento.objects.filter(id_jsondiv_evento=id_jsondiv_evento).first()
+        if agendamento is not None:
+            agendamento.hora_inicio = hora_inicio
+            agendamento.hora_final = hora_final
+            agendamento.json_evento = json_event
+            
+            agendamento.save()
+
+        return agendamento
+
 
     def atualiza_cliente(self, perfil_id, evento_id):
 
