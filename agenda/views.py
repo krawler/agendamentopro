@@ -37,17 +37,22 @@ class Principal(DispachLoginRequired, View):
     
     
     def post(self, *args, **kwargs):
-        hora_inicio = self.request.POST.get('hora_inicio')
-        hora_final = self.request.POST.get('hora_final')
-        data_evento = self.request.POST.get('data_evento')  
+        hora_inicio      = self.request.POST.get('hora_inicio')
+        hora_final       = self.request.POST.get('hora_final')
+        data_evento     = self.request.POST.get('data_evento')  
         ultima_atualizacao = self.request.POST.get('ultima_atualizacao')  
-        profissional = self.request.user
-        json_event = self.request.POST.get('jsonEvent')
-        id_json_event = self.request.POST.get('id_evento')
-        print(id_json_event)
-        nova_agenda = agenda_service.Agenda_Service().adiciona_evento(hora_inicio, hora_final, data_evento, profissional, json_event, id_json_event)
-        lista_agendas = [nova_agenda]
-        json_data = serializers.serialize('json', lista_agendas)
+        profissional    = self.request.user
+        json_event      = self.request.POST.get('jsonEvent')
+        id_json_event   = self.request.POST.get('id_evento')
+        agendamento = Agendamento.objects.filter(id_jsondiv_evento=id_json_event).first()
+        if agendamento is None:
+            nova_agenda = agenda_service.Agenda_Service().adiciona_evento(hora_inicio, hora_final, data_evento, profissional, json_event, id_json_event)
+            lista_agendas = [nova_agenda]
+            json_data = serializers.serialize('json', lista_agendas)
+        else:
+            agenda = agenda_service.Agenda_Service().atualiza_evento(id_json_evento, json_evento, hora_inicio, hora_final);
+            lista_agendas = [agenda]
+            json_data = serializers.serialize('json', lista_agendas)
 
         return JsonResponse(json_data, safe=False)
 
