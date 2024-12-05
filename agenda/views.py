@@ -26,7 +26,7 @@ class Principal(DispachLoginRequired, View):
     
     def get(self, *args, **kwargs):
 
-        agendamentos = Agendamento.objects.exclude(json_evento='criado fora do calendario agendador')    
+        agendamentos = Agendamento.objects.all()   
         agendamentos = serializers.serialize('json', agendamentos)
         context = {
             'agendamentos' : agendamentos,
@@ -44,15 +44,19 @@ class Principal(DispachLoginRequired, View):
         profissional    = self.request.user
         json_event      = self.request.POST.get('jsonEvent')
         id_json_event   = self.request.POST.get('id_evento')
+        print(id_)
         agendamento = Agendamento.objects.filter(id_jsondiv_evento=id_json_event).first()
         if agendamento is None:
             nova_agenda = agenda_service.Agenda_Service().adiciona_evento(hora_inicio, hora_final, data_evento, profissional, json_event, id_json_event)
             lista_agendas = [nova_agenda]
             json_data = serializers.serialize('json', lista_agendas)
         else:
-            agenda = agenda_service.Agenda_Service().atualiza_evento(id_json_evento, json_evento, hora_inicio, hora_final);
-            lista_agendas = [agenda]
-            json_data = serializers.serialize('json', lista_agendas)
+            agenda = agenda_service.Agenda_Service().atualiza_evento(id_json_event, json_event, hora_inicio, hora_final)
+            if agenda is not None:
+                lista_agendas = [agenda]
+                json_data = serializers.serialize('json', lista_agendas)
+            else:
+                json_data = '{retorno : false}'    
 
         return JsonResponse(json_data, safe=False)
 
