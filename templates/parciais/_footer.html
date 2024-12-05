@@ -43,21 +43,19 @@
                                             showExtraTitleBarButton : false    
                                         });
 
+    //defaultEventDuration: duracao do evento                                    
     calendarInstance1.setOptions( {
         views: {
                 fullMonth: {
                     maximumEventsPerDayDisplay: 10
                 }
             },  
+        defaultEventDuration: 40,    
+        allowHtmlInDisplay: true,
         visibleDays: [ 0, 1, 2, 3, 4, 5 ],
         useLocalStorageForEvents: true,
         exportEventsEnabled: true,
-        dragAndDropForEventsEnabled: true,
-        tooltipDelay: 500,
-        defaultEventBackgroundColor: '#006bc8',
-        allowHtmlInDisplay: true,
-        defaultEventDuration: 45,
-        manualEditingEnabled: true
+        
     });
         
     
