@@ -44,7 +44,6 @@ class Principal(DispachLoginRequired, View):
         profissional    = self.request.user
         json_event      = self.request.POST.get('jsonEvent')
         id_json_event   = self.request.POST.get('id_evento')
-        print(id_)
         agendamento = Agendamento.objects.filter(id_jsondiv_evento=id_json_event).first()
         if agendamento is None:
             nova_agenda = agenda_service.Agenda_Service().adiciona_evento(hora_inicio, hora_final, data_evento, profissional, json_event, id_json_event)
