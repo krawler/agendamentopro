@@ -13,3 +13,4 @@ class Agendamento(models.Model):
     observacao = models.TextField(max_length=500, null=True)
     desativado = models.BooleanField(default=False)
     json_evento = models.TextField(max_length=1000)
+    id_jsondiv_evento = models.CharField(max_length=60) 
