@@ -4712,7 +4712,7 @@ function calendarJs(ol, pl, ql) {
     b.dragAndDropForEventsEnabled = v(b.dragAndDropForEventsEnabled, !0);
     b.exportEventsEnabled = v(b.exportEventsEnabled, !0);
     b.manualEditingEnabled = v(b.manualEditingEnabled, !0);
-    b.autoRefreshTimerDelay = xa(b.autoRefreshTimerDelay, 40000);
+    b.autoRefreshTimerDelay = xa(b.autoRefreshTimerDelay, 20000);
     b.fullScreenModeEnabled = v(b.fullScreenModeEnabled, !0);
     b.tooltipDelay = xa(b.tooltipDelay, 1000);
     b.holidays = jg(b.holidays, [{day:1, month:1, title:"New Year's Day", onClickUrl:"https://en.wikipedia.org/wiki/New_Year%27s_Day"}, {day:14, month:2, title:"Valentine's Day", onClickUrl:"https://en.wikipedia.org/wiki/Valentine%27s_Day"}, {day:1, month:4, title:"April Fools' Day", onClickUrl:"https://en.wikipedia.org/wiki/April_Fools%27_Day"}, {day:22, month:4, title:"Earth Day", onClickUrl:"https://en.wikipedia.org/wiki/Earth_Day"}, {day:31, month:10, title:"Halloween", onClickUrl:"https://en.wikipedia.org/wiki/Halloween"}, 
@@ -5458,10 +5458,9 @@ function calendarJs(ol, pl, ql) {
           evento = d[0];
           if(! $(evento).hasClass("expired")){
 
-            dateFrom = d[1].from.toDateString(); 
-            timeFrom = d[1].from;
+            dateTimeFrom = d[1].from;
 
-            if(dateFrom == new Date().toDateString() && timeFrom > new Date()){
+            if(dateTimeFrom > new Date()){
                 json_update = JSON.stringify(d[1]);
                 id_evento = d[1].id;
                 $.ajax({
