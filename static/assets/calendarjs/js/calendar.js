@@ -5203,9 +5203,11 @@ function calendarJs(ol, pl, ql) {
   //terceiro parametro booleano
   //quarto parametro undefined
   u.addEvent = function(a, c, d, e) {
+
     
     var f = !1;
     if (!w && (e = v(e, !0), W(a.from) && (a.from = new Date(a.from)), W(a.to) && (a.to = new Date(a.to)), W(a.repeatEnds) && (a.repeatEnds = new Date(a.repeatEnds)), W(a.created) && (a.created = new Date(a.created)), W(a.lastUpdated) && (a.lastUpdated = new Date(a.lastUpdated)), a.color === b.defaultEventBackgroundColor && (a.color = null), a.colorText === b.defaultEventTextColor && (a.colorText = null), a.colorBorder === b.defaultEventBorderColor && (a.colorBorder = null), a.from <= a.to)) {
+      
       var g = a.from;
       g = g.getFullYear() + "-" + g.getMonth() + "-" + g.getDate();
       var h = kc();
@@ -5232,11 +5234,14 @@ function calendarJs(ol, pl, ql) {
         d && A(b.events.onEventAdded, a);
         c && (qb(), Sb(), La(), ra());
       }
+    }else{
+      console.log(c);
+      if(d==true)
+          AdicionaAgendamento(a);
     }
     return f;
   };
   u.updateEvents = function(a, c, d) {
-    
     if (!w) {
       c = v(c, !0);
       d = v(d, !0);
@@ -5251,8 +5256,7 @@ function calendarJs(ol, pl, ql) {
   };
   u.updateEvent = function(a, c, d, e) {
     
-    AdicionaAgendamento(c);
-    
+    AtualizaAgendamento(c);
     $("#dialog").dialog({height: 600,
         width: 450,
         modal: true,
@@ -5459,7 +5463,9 @@ function calendarJs(ol, pl, ql) {
           if(! $(evento).hasClass("expired")){
 
             dateFrom = d[1].from.toDateString(); 
-            if(dateFrom == new Date().toDateString()){
+            timeFrom = d[1].from;
+
+            if(dateFrom == new Date().toDateString() && timeFrom > new Date()){
                 json_update = JSON.stringify(d[1]);
                 id_evento = d[1].id;
                 $.ajax({
@@ -5485,7 +5491,8 @@ function calendarJs(ol, pl, ql) {
 
   function AdicionaAgendamento(jsonEvent){
 
-    //evento =  JSON.parse(localStorage.getItem(jsonEvent.from.getTime()+'-'+jsonEvent.to.getTime()));
+    console.log(jsonEvent);
+
     id_div_evento = jsonEvent.id;
     var strJsonEvent = JSON.stringify(jsonEvent);
     localStorage.setItem(jsonEvent.id, strJsonEvent);
@@ -5531,8 +5538,56 @@ function calendarJs(ol, pl, ql) {
         localStorage.setItem('strJsonEvent', jsonData);
       }
   });
-    
-
 }
 
+function AtualizaAgendamento(jsonEvent){
+  
+    id_div_evento = jsonEvent.id;
+    var strJsonEvent = JSON.stringify(jsonEvent);
+
+    datahora_inicio = jsonEvent.from; 
+    datahora_final = jsonEvent.to; 
+    datahora_criacao = new Date(jsonEvent.created); 
+    titulo = jsonEvent.title;
+    console.log(titulo);
+    ultima_atualizacao = new Date(jsonEvent.lastUpdated) ; 
+
+    data_evento =  datahora_inicio.getFullYear() + '-'  + 
+                    (datahora_inicio.getMonth() + 1) + '-' + 
+                    datahora_inicio.getDate();
+    
+    hora_inicio = datahora_inicio.getHours() + ':'  + 
+                  datahora_inicio.getMinutes() + ':' + 
+                  datahora_inicio.getSeconds();
+    
+    
+    hora_final = datahora_final.getHours() + ':'  + 
+                  datahora_final.getMinutes() + ':' + 
+                  datahora_final.getSeconds();
+    
+
+    $.ajaxSetup({
+        headers:
+        { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+    });
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: "http://localhost:8000/atualizaevento",
+        data: {
+            "hora_inicio": hora_inicio,
+            "hora_final": hora_final,
+            "data_evento": data_evento,
+            "id_evento": id_div_evento,
+            "titulo" : titulo,
+            "ultima_atualizacao" : ultima_atualizacao,
+            "jsonEvent" : JSON.stringify(jsonEvent),
+            "csrfmiddlewaretoken": $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(jsonData) { 
+          localStorage.setItem('strJsonEvent', jsonData);
+        }
+    });
+}
 };
