@@ -206,10 +206,10 @@ class Login(View):
 
 
 class Logout(View):
+
     def get(self, *args, **kwargs):
         
-        carrinho = self.request.session.get('carrinho')
-        
+        carrinho = self.request.session.get('carrinho')    
         logout(self.request)
         self.request.session.save()
-        return redirect('produto:lista')
+        return redirect('perfil:login')
