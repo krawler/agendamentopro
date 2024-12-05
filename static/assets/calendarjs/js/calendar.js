@@ -1226,7 +1226,6 @@ function calendarJs(ol, pl, ql) {
       b.manualEditingEnabled && (c.ondblclick = function() {
         if (b.useTemplateWhenAddingNewEvent) {
           var C = yd(m, m);
-          console.log(C);
           //criacao de um novo evento
           T(C);
           zd();
@@ -4658,6 +4657,7 @@ function calendarJs(ol, pl, ql) {
     var c = null, d = [].slice.call(arguments, 1);
     0 < d.length && (c = !1);
     dd(a) && (c = a.apply(null, d));
+    atualizaEventoDia(d);
     return c;
   }
   function ee(a, c, d) {
@@ -4712,7 +4712,7 @@ function calendarJs(ol, pl, ql) {
     b.dragAndDropForEventsEnabled = v(b.dragAndDropForEventsEnabled, !0);
     b.exportEventsEnabled = v(b.exportEventsEnabled, !0);
     b.manualEditingEnabled = v(b.manualEditingEnabled, !0);
-    b.autoRefreshTimerDelay = xa(b.autoRefreshTimerDelay, 30000);
+    b.autoRefreshTimerDelay = xa(b.autoRefreshTimerDelay, 40000);
     b.fullScreenModeEnabled = v(b.fullScreenModeEnabled, !0);
     b.tooltipDelay = xa(b.tooltipDelay, 1000);
     b.holidays = jg(b.holidays, [{day:1, month:1, title:"New Year's Day", onClickUrl:"https://en.wikipedia.org/wiki/New_Year%27s_Day"}, {day:14, month:2, title:"Valentine's Day", onClickUrl:"https://en.wikipedia.org/wiki/Valentine%27s_Day"}, {day:1, month:4, title:"April Fools' Day", onClickUrl:"https://en.wikipedia.org/wiki/April_Fools%27_Day"}, {day:22, month:4, title:"Earth Day", onClickUrl:"https://en.wikipedia.org/wiki/Earth_Day"}, {day:31, month:10, title:"Halloween", onClickUrl:"https://en.wikipedia.org/wiki/Halloween"}, 
@@ -5254,8 +5254,9 @@ function calendarJs(ol, pl, ql) {
     AdicionaAgendamento(c);
     
     $("#dialog").dialog({height: 600,
-      width: 450,
-      modal: true,});
+        width: 450,
+        modal: true,
+    });
     
     var f = !1;
     !w && (f = u.removeEvent(a, !1, !1)) && (d = v(d, !0), e = v(e, !0), f = u.addEvent(c, d, !1), qb(), f && e && A(b.events.onEventUpdated, c));
@@ -5450,12 +5451,44 @@ function calendarJs(ol, pl, ql) {
     }
   })(document, window, navigator, Math, JSON);
 
+  function atualizaEventoDia(d){
+  
+    if(d.length > 1){
+        if(d[0] != undefined){
+          evento = d[0];
+          if(! $(evento).hasClass("expired")){
+
+            dateFrom = d[1].from.toDateString(); 
+            if(dateFrom == new Date().toDateString()){
+                json_update = JSON.stringify(d[1]);
+                id_evento = d[1].id;
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: "http://localhost:8000/atualizajson",
+                    data: {
+                        "id_evento": id_evento,
+                        "jsonEvent" : JSON.stringify(json_update),
+                        "csrfmiddlewaretoken": $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(jsonData) { 
+                      localStorage.setItem('strJsonEvent', jsonData);
+                    }
+                });
+              
+            }
+                
+          }    
+      }
+    }
+  }
+
   function AdicionaAgendamento(jsonEvent){
 
     //evento =  JSON.parse(localStorage.getItem(jsonEvent.from.getTime()+'-'+jsonEvent.to.getTime()));
-    
+    id_div_evento = jsonEvent.id;
     var strJsonEvent = JSON.stringify(jsonEvent);
-    localStorage.setItem(jsonEvent.from.getTime()+'-'+jsonEvent.to.getTime(), strJsonEvent);
+    localStorage.setItem(jsonEvent.id, strJsonEvent);
 
     datahora_inicio = jsonEvent.from; 
     datahora_final = jsonEvent.to; 
@@ -5489,6 +5522,7 @@ function calendarJs(ol, pl, ql) {
           "hora_inicio": hora_inicio,
           "hora_final": hora_final,
           "data_evento": data_evento,
+          "id_evento": id_div_evento,
           "ultima_atualizacao" : ultima_atualizacao,
           "jsonEvent" : JSON.stringify(jsonEvent),
           "csrfmiddlewaretoken": $('meta[name="csrf-token"]').attr('content')
