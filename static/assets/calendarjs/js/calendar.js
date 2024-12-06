@@ -5473,7 +5473,10 @@ function calendarJs(ol, pl, ql) {
                         "csrfmiddlewaretoken": $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(jsonData) { 
-                      localStorage.setItem('strJsonEvent', jsonData);
+                      console.log(jsonData);
+                      let jsonDataobj = JSON.parse(jsonData);
+                      console.log(jsonDataobj.title);
+
                     }
                 });
               
@@ -5544,7 +5547,6 @@ function AtualizaAgendamento(jsonEvent){
     datahora_final = jsonEvent.to; 
     datahora_criacao = new Date(jsonEvent.created); 
     titulo = jsonEvent.title;
-    console.log(titulo);
     ultima_atualizacao = new Date(jsonEvent.lastUpdated) ; 
 
     data_evento =  datahora_inicio.getFullYear() + '-'  + 
