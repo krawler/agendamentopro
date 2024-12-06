@@ -73,9 +73,9 @@ class Atualiza_Json(DispachLoginRequired, View):
      def post(self, *args, **kwargs):
         id_json_evento = self.request.POST.get('id_evento');
         json_evento = self.request.POST.get('jsonEvent');
-        qs_evento = agenda_service.Agenda_Service().atualiza_json(id_json_evento, json_evento);
-        retorno = '{retorno : true}'
-        return JsonResponse(retorno, safe=False)
+        qs_retorno = agenda_service.Agenda_Service().atualiza_json(id_json_evento, json_evento);
+        json_data = serializers.serialize('json', qs_retorno)
+        return JsonResponse(json_data, safe=False) 
 
 
 class Atualiza_Evento(DispachLoginRequired, View):
