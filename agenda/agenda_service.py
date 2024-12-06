@@ -57,12 +57,10 @@ class Agenda_Service():
         qs_agendamento = Agendamento.objects.filter(id_jsondiv_evento=id_json_evento)
         agendamento = qs_agendamento.first()
         if agendamento is not None:
-            if agendamento.json_evento == json_evento:
-                return '{return false}'
-            else:
+            if agendamento.json_evento != json_evento:
                 agendamento.json_evento = json_evento
                 agendamento =  agendamento.save()
-            
-            return agendamento
+
+        return qs_agendamento
         
         
