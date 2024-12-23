@@ -11,6 +11,7 @@
 /agenda/__pycache__
 
 loja_django/__pycache__
+/imagens/
 
 db.sqlite3
 passenger.log
