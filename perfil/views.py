@@ -166,7 +166,7 @@ class Login(View):
                 self.request,
                 'Usuário ou senha inválidos'
             )
-            return redirect('perfil:criar')
+            return redirect('perfil:login')
         
         usuario = authenticate(self.request, username=username, password=password)
         
