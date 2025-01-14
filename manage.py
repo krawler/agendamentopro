@@ -18,5 +18,13 @@ def main():
     execute_from_command_line(sys.argv)
 
 
+def create_log_directory():
+    log_dir = os.path.join(BASE_DIR, 'logs')
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
+create_log_directory()
+
+
 if __name__ == '__main__':
     main()
