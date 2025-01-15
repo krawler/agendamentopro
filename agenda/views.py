@@ -26,7 +26,8 @@ class Principal(DispachLoginRequired, View):
     
     def get(self, *args, **kwargs):
 
-        agendamentos = Agendamento.objects.all()   
+        user = self.request.user
+        agendamentos = Agendamento.objects.filter(profissional=user)   
         agendamentos = serializers.serialize('json', agendamentos)
         context = {
             'agendamentos' : agendamentos,
@@ -88,4 +89,23 @@ class Atualiza_Evento(DispachLoginRequired, View):
         qs_evento = agenda_service.Agenda_Service().atualiza_evento(id_json_evento, json_evento, hora_inicio, hora_final);
         retorno = '{retorno : true}'
         return JsonResponse(retorno, safe=False)
+
+class Marcar(View):
+    
+    def get(self, *args, **kwargs):
+        
+        context = {
+            'horarios' : agenda_service.Agenda_Service().gera_intervalos('08:00', '18:00')
+        }
+
+        return render(self.request, 'agenda/novo_horario.html', context)
+    
+    def post(self, *args, **kwargs):
+        
+        user = self.request.user
+        data_evento = self.request.POST.get('data_evento')
+        horario_inicio_fim = self.request.POST.get('horario_inicio_fim')
+        agenda_service.Agenda_Service().adiciona_evento_formulario(horario_inicio_fim, data_evento, user)
+
+        return redirect('agenda:marcar')
 
