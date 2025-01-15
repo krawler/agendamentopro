@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load omfilters %}
+
+{% load static %}
+
+{% block conteudo %}
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+	<style type="text/css" >
+		html, body{
+			margin:0;
+			padding:0;
+			height:100%;
+			overflow:hidden;
+		}
+		.yellow_section {
+			background-color: #ffa749;
+			opacity: 0.25;
+		}
+	</style>
+
+<div class="container d-flex vh-100" id="container" data-token="{{csrf_token}}"> 
+
+	<div class="card borderless">
+        <h4>Selecione a data e a hora disponíveis</h4>
+        <div class="card-body">
+            <form method="POST" action="">
+                {% csrf_token %}
+                <div class="form-group contents date-picker">
+                    <label for="">Data</label>
+                    <input type="date" 
+							name="data_evento" 
+							id="data_evento" 
+							placeholder="Selecione a data"
+                           class="form-control" 
+						   aria-describedby="usuarioHelp">
+                </div>
+                <div class="form-group">
+                    <label for="InputUsuario">Horário</label>
+					<select name="horario_inicio_fim" id="horario_inicio_fim" class="form-control">
+						{% for horario in horarios %}
+							<option value="{{ horario }}">{{ horario | formata_horario }}</option>
+						{% endfor %}
+					</select>
+                </div>
+                <button type="submit" id="btn_login_perfil" class="btn btn-primary btn-block btn-lg">
+                    Marcar
+                </button>  
+           </div>
+        </form>  
+	</div>	
+
+</div>
+{% endblock %}
+
+<script>
+	var calendarInstance1 = new calendarJs( "data_evento", {
+
+		openInFullScreenMode: true,
+	 
+		startOfWeekDay: 6, // 6 = Sunday
+	 
+		views: {
+	 
+			fullMonth: {
+	 
+				addYearButtons: true,
+	 
+				titleBarDateFormat: "{mmm} {yyyy}"
+	 
+			},
+	 
+			datePicker: {
+	 
+				minimumDate: new Date(),
+	 
+			}
+	 
+		}
+	 
+	 } );
+
+	
+</script>
