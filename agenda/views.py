@@ -86,7 +86,7 @@ class Atualiza_Evento(DispachLoginRequired, View):
         hora_final = self.request.POST.get('hora_final')
         id_json_evento = self.request.POST.get('id_evento');
         json_evento = self.request.POST.get('jsonEvent');
-        qs_evento = agenda_service.Agenda_Service().atualiza_evento(id_json_evento, json_evento, hora_inicio, hora_final);
+        agenda_service.Agenda_Service().atualiza_evento(id_json_evento, json_evento, hora_inicio, hora_final);
         retorno = '{retorno : true}'
         return JsonResponse(retorno, safe=False)
 
@@ -94,8 +94,12 @@ class Marcar(View):
     
     def get(self, *args, **kwargs):
         
+        data_evento = self.request.GET.get('data_evento')
+        if data_evento is None:
+            data_evento = datetime.now()
+        
         context = {
-            'horarios' : agenda_service.Agenda_Service().gera_intervalos('08:00', '18:00')
+            'horarios' : agenda_service.Agenda_Service().gera_intervalos('09:00', '20:00', data_evento)
         }
 
         return render(self.request, 'agenda/novo_horario.html', context)
