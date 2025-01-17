@@ -28,7 +28,7 @@
 	<div class="card borderless">
         <h4>Selecione a data e a hora disponíveis</h4>
         <div class="card-body">
-            <form method="POST" action="">
+            <form method="POST" action="" id="form_agendamento">
                 {% csrf_token %}
                 <div class="form-group contents date-picker">
                     <label for="">Data</label>
@@ -55,34 +55,25 @@
 	</div>	
 
 </div>
-{% endblock %}
 
 <script>
-	var calendarInstance1 = new calendarJs( "data_evento", {
-
-		openInFullScreenMode: true,
-	 
-		startOfWeekDay: 6, // 6 = Sunday
-	 
-		views: {
-	 
-			fullMonth: {
-	 
-				addYearButtons: true,
-	 
-				titleBarDateFormat: "{mmm} {yyyy}"
-	 
-			},
-	 
-			datePicker: {
-	 
-				minimumDate: new Date(),
-	 
-			}
-	 
-		}
-	 
-	 } );
-
 	
+	$(document).ready(function(){
+
+		  var url = window.location;
+		  let params = new URLSearchParams(url.search);
+		  
+		  if(params.has('data_evento')){
+			  data_evento = params.get('data_evento'); 
+			  $("#data_evento").val(data_evento);
+		  }		
+
+		  $("#data_evento").on('change', function(){
+			window.location.href = "?data_evento="+$(this).val();	
+		  });
+	 });
+
 </script>
+
+{% endblock %}
+
