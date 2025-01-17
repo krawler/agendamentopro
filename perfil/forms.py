@@ -1,62 +1,69 @@
 from django import forms
-from django.db.models import DateField
 from django.contrib.auth.models import User
 from . import models
 
+
 class PerfilForm(forms.ModelForm):
-    
-    '''
-    data_nascimento = forms.DateField(
-        widget=forms.DateTimeInput(format='%d/%m/%Y'),
-        input_formats=['%d/%m/%Y'],
-        label='Data de nascimento'
-    )
-    '''
-
-    cpf = forms.CharField(
-        widget=forms.TextInput(),
-        label='Documento CPF'
-    )
-
-    cep = forms.CharField(
-        widget=forms.TextInput(),
-        label='CEP'
-    )
-
+     
     def __init__(self, perfil=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.perfil = perfil
     
     class Meta:
         model = models.PerfilUsuario
-        fields = ('cpf', 'cep', 'endereco', 'numero', 'complemento', 
-                'bairro', 'cidade', 'estado')
+        fields = ('nome_completo','cep', 'endereco', 'numero', 'complemento', 
+                  'bairro', 'cidade', 'estado', 'telefone')
+
+
+class PerfilComEnderecoForm(PerfilForm):
+
+    complemento = forms.CharField(
+        widget=forms.TextInput(),
+        label='Complemento',
+        required=False,
+        help_text='Esse campo não é obrigatório'
+    )
+
+    bairro = forms.CharField(
+        widget=forms.TextInput(),
+        label='Bairro',
+        required=False,
+        help_text='Esse campo não é obrigatório'
+    )
+
+    cep = forms.CharField(
+        widget=forms.TextInput(),
+        label='CEP'
+    )
+    
+    
+class PerfilSemEnderecoForm(PerfilForm):
+
+    class Meta:
+        model = models.PerfilUsuario
+        fields = ('nome_completo', 'telefone')
+    
 
 class UserForm(forms.ModelForm):
     
     password = forms.CharField(
         required=False,
         widget=forms.PasswordInput(),
-        label='Senha*',
+        label='Senha',
         help_text='Use uma letra maiuscula e um numero'
     )
     password2 = forms.CharField(
         required=False,
         widget=forms.PasswordInput(),
-        label='Confirmação de senha*',
+        label='Confirmação de senha',
         help_text='Digite a senha igual a senha informada no campo acima'
-    )
-
-    username = forms.CharField(
-        required=True,
-        widget=forms.TextInput(),
-        label='nome de usuário'
     )
 
     email = forms.CharField(
         required=True,
         widget=forms.TextInput(),
-        label='Email'
+        label='Email',
+        help_text='Enviaremos a confirmação de cadastro e outros emails para esse endereço'
     )
 
     def __init__(self, usuario=None, *args, **kwargs):
@@ -65,7 +72,7 @@ class UserForm(forms.ModelForm):
         
     class Meta:
         model = User
-        fields = ('email', 'username', 'password', 'password2')
+        fields = ('email','password', 'password2')
     
     def clean(self, *args, **kwargs):
         data = self.data
@@ -112,4 +119,4 @@ class UserForm(forms.ModelForm):
                 validation_error_msgs['password2'] = error_msg_password_empty            
         
         if validation_error_msgs:
-            raise(forms.ValidationError(validation_error_msgs))
+            raise (forms.ValidationError(validation_error_msgs))
