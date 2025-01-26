@@ -53,18 +53,25 @@
         defaultEventDuration: 40,    
         allowHtmlInDisplay: true,
         visibleDays: [ 0, 1, 2, 3, 4, 5 ],
-        useLocalStorageForEvents: true,
+        useLocalStorageForEvents: false,
         exportEventsEnabled: true,
         
     });
         
-    
     objEventos = []
-    agendamentos = JSON.parse($("#agendamentos").val());
-    agendamentos.forEach(agendamento => {
-        objEventos.push(JSON.parse(agendamento.fields.json_evento));
-    });
-    calendarInstance1.addEvents(objEventos);
-    calendarInstance1.turnOnFullScreen();
+    if($("#agendamentos").val() != undefined){
+        agendamentos = JSON.parse($("#agendamentos").val());    
+        if(agendamentos != undefined || agendamentos.length != 0){
+            agendamentos.forEach(agendamento => {
+                json_evento_agendamento = agendamento.fields.json_evento;
+                json_evento_agendamento = json_evento_agendamento.replaceAll("\\", "");
+                json_evento_agendamento = JSON.parse(json_evento_agendamento);
+                
+                calendarInstance1.addEvent(json_evento_agendamento, !1, !1, !1);
+            });
+            calendarInstance1.turnOnFullScreen();    
+        } 
+    }
+    
     
 </script>
