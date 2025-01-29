@@ -5239,6 +5239,7 @@ function calendarJs(ol, pl, ql) {
         f = !0;
         d && A(b.events.onEventAdded, a);
         c && (qb(), Sb(), La(), ra());
+        AdicionaAgendamento(a);
       }
     }
     return f;
@@ -5587,7 +5588,7 @@ function AtualizaAgendamento(jsonEvent){
     $.ajax({
         type: "POST",
         dataType: "json",
-        url: "https://raradmco.tx1.fcomet.com/agendamentopro/",
+        url: "http://localhost:8000/",
         data: {
             "hora_inicio": hora_inicio,
             "hora_final": hora_final,
