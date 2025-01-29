@@ -127,5 +127,40 @@
         });
     }
 
+    var flag_popstate = false; // Variável para controlar o popstate
+
+    window.addEventListener('popstate', function(event) {
+        if (flag_popstate) {
+            flag_popstate = false; // Reseta a flag
+            return; // Sai da função se a flag estiver ativa
+        }
+
+    });
+
+    window.addEventListener('beforeunload', function(e) {
+        if (flag_popstate) {
+            return; 
+        }
+        // Verifica se o usuário está saindo da página específica
+        absolute_url = '{{ request.build_absolute_uri }}';
+        absolute_url = absolute_url.replace('&amp;', '&');
+        if (window.location.href == absolute_url) {
+            path = window.location.pathname;
+            if (path == '' || path == '/' || path == undefined) {    
+                var msg = 'Deseja mesmo sair?';
+                e.preventDefault(); // Para navegadores modernos
+                e.returnValue = msg; // Para navegadores antigos
+                return msg;   
+            }
+        }
+
+        
+    });
+
+    // Função para lidar com o clique nos botões de navegação do site
+    function navigate(url) {
+        flag_popstate = true; // Ativa a flag antes de navegar
+        window.location.href = url;
+    }
 
 </script>
