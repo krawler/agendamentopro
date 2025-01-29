@@ -5458,7 +5458,10 @@ function calendarJs(ol, pl, ql) {
   })(document, window, navigator, Math, JSON);
 
   function atualizaEventoDia(d){ 
-
+    
+    //todo: parametrizar
+    //var urlAtualizaJson = "https://raradmco.tx1.fcomet.com/agendamentopro/atualizajson"
+    var urlAtualizaJson = "http://localhost:8000/atualizajson"
     if(d.length > 1){
         if(d[0] != undefined){
            evento = d[0];        
@@ -5474,7 +5477,7 @@ function calendarJs(ol, pl, ql) {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: "http://localhost:8000/atualizajson",
+                    url: urlAtualizaJson,
                     data: {
                         "id_evento": id_evento,
                         "jsonEvent" : json_update,
@@ -5482,15 +5485,15 @@ function calendarJs(ol, pl, ql) {
                     },
                     success: function(jsonData) { 
                       let jsonDataobj = JSON.parse(jsonData);
-                          if (jsonData.length > 0){
-                             for (let i = 0; i < jsonDataobj.length; i++) {
-                              if(jsonDataobj[i].fields.json_evento != undefined){
-                                let json_event = JSON.parse(jsonDataobj[i].fields.json_evento);
-                                u.addEvent(json_event, !1, !1, !1);  
-                              } 
-                             }
-                          }                              
-                        }
+                      if (jsonData.length > 0){
+                          for (let i = 0; i < jsonDataobj.length; i++) {
+                          if(jsonDataobj[i].fields.json_evento != undefined){
+                            let json_event = JSON.parse(jsonDataobj[i].fields.json_evento);
+                            u.addEvent(json_event, !1, !1, !1);  
+                          } 
+                          }
+                      }                              
+                    }
                 });
               
             }
@@ -5584,7 +5587,7 @@ function AtualizaAgendamento(jsonEvent){
     $.ajax({
         type: "POST",
         dataType: "json",
-        url: "http://localhost:8000",
+        url: "https://raradmco.tx1.fcomet.com/agendamentopro/",
         data: {
             "hora_inicio": hora_inicio,
             "hora_final": hora_final,
