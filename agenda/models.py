@@ -14,3 +14,8 @@ class Agendamento(models.Model):
     desativado = models.BooleanField(default=False)
     json_evento = models.TextField(max_length=1000)
     id_jsondiv_evento = models.CharField(max_length=60) 
+
+class Configuracao(models.Model):
+    url_atualiza_json = models.CharField(max_length=100)
+    tempo_duracao_evento = models.IntegerField()
+    
