@@ -7,8 +7,10 @@
 /pedido/migrations/__pycache__
 /produto/migrations/__pycache__
 /perfil/migrations/__pycache__
+/perfil/templates/email/__pycache__
 /produto/templatetags/__pycache__
 /agenda/__pycache__
+
 
 loja_django/__pycache__
 /imagens/
