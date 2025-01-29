@@ -10,13 +10,12 @@ class PerfilUsuario(models.Model):
 
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)
     nome_completo = models.CharField(null=True, max_length=100) 
-    cpf = models.CharField(max_length=14,null=True, blank=True)
-    endereco = models.CharField(null=False, max_length=100)
-    numero = models.CharField(max_length=15)
+    endereco = models.CharField(null=True, max_length=100)
+    numero = models.CharField(max_length=15, null=True)
     complemento = models.CharField(max_length=50, null=True, blank=True)
     bairro = models.CharField(max_length=50, null=True, blank=True)
-    cep = models.CharField(max_length=9, null=False, blank=True)
-    cidade = models.CharField(null=False, max_length=30)
+    cep = models.CharField(max_length=9, null=True, blank=True)
+    cidade = models.CharField(null=True, max_length=30)
     estado = models.CharField(
         max_length=2,
         default='SP',
