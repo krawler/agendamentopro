@@ -1061,6 +1061,9 @@ div.calendar div.full-day-view div.title-bar div.ib-arrow-contract-left-right {
   div.calendar div.full-day-view div.title-bar div.left-divider-line-events {
     display: none !important;
   }
+  div.calendar div.full-day-view div.title-bar div.ib-hamburger-side{
+    display: inline-block !important;
+  }
 }
 div.calendar div.full-day-view div.contents {
   display: inline-block;
@@ -1874,12 +1877,10 @@ div.calendar div.full-month-view div.title-bar div.right-divider-line-views {
 @media screen and (max-width: 450px) {
   div.calendar div.full-month-view div.title-bar div.ib-refresh,
   div.calendar div.full-month-view div.title-bar div.ib-search,
-  div.calendar div.full-month-view div.title-bar div.ib-hamburger-side,
   div.calendar div.full-month-view div.title-bar div.ib-eye,
   div.calendar div.full-month-view div.title-bar div.ib-arrow-down-full-line,
   div.calendar div.full-month-view div.title-bar div.ib-octagon-hollow,
   div.calendar div.full-month-view div.title-bar div.ib-expand,
-  div.calendar div.full-month-view div.title-bar div.ib-hourglass,
   div.calendar div.full-month-view div.title-bar div.ib-rewind,
   div.calendar div.full-month-view div.title-bar div.ib-forward,
   div.calendar div.full-month-view div.title-bar div.ib-arrow-expand-left-right,
@@ -1892,6 +1893,15 @@ div.calendar div.full-month-view div.title-bar div.right-divider-line-views {
   }
 }
 
+@media screen and (max-width: 250px) {
+  div.calendar div.full-month-view div.title-bar div.ib-hourglass,
+  div.calendar div.full-month-view div.title-bar div.ib-hamburger-side,{
+    display: block !important;
+  }
+  div.calendar div.full-month-view div.title-bar div.ib-plus{
+    display: none !important;
+  }
+}
 /*
     -------------------------------------------------------------------------
     Calendar.js - Full Month View - Day Events
