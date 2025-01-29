@@ -1888,7 +1888,8 @@ div.calendar div.full-month-view div.title-bar div.right-divider-line-views {
   div.calendar div.full-month-view div.title-bar div.right-divider-line-full-screen-mode,
   div.calendar div.full-month-view div.title-bar div.right-divider-line-views,
   div.calendar div.full-month-view div.title-bar div.ib-arrow-right-full-line,
-  div.calendar div.full-month-view div.title-bar div.left-divider-line-events {
+  div.calendar div.full-month-view div.title-bar div.left-divider-line-events,
+  div.calendar div.full-month-view div.title-bar div.ib-plus {
     display: none !important;
   }
 }
@@ -1898,7 +1899,7 @@ div.calendar div.full-month-view div.title-bar div.right-divider-line-views {
   div.calendar div.full-month-view div.title-bar div.ib-hamburger-side,{
     display: block !important;
   }
-  div.calendar div.full-month-view div.title-bar div.ib-plus{
+  div.calendar div.full-month-view div.title-bar div.ib-plus {
     display: none !important;
   }
 }
