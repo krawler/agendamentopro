@@ -8,6 +8,7 @@ from .models import Agendamento
 from perfil.models import PerfilUsuario
 from . import agenda_service
 from datetime import datetime, timedelta
+from django.contrib import messages
 
 
 class DispachLoginRequired(View):
@@ -77,8 +78,9 @@ class Atualiza_Json(DispachLoginRequired, View):
         id_json_evento = self.request.POST.get('id_evento')
         json_evento = self.request.POST.get('jsonEvent')
         agenda_service.Agenda_Service().atualiza_json(id_json_evento, json_evento)
-        qs_retorno = Agendamento.objects.filter(data_evento=datetime.today(), 
-                                                hora_inicio__gte=datetime.now())
+        qs_retorno = Agendamento.objects.filter(data_evento=datetime.today(),
+                                                profissional=self.request.user, 
+                                                hora_inicio__gte=datetime.now() + timedelta(hours=-3))
         json_retorno = serializers.serialize('json', qs_retorno)
         return JsonResponse(json_retorno, safe=False)
 
@@ -103,9 +105,17 @@ class Marcar(View):
         else:
             data_evento = datetime.strptime(data_evento, "%Y-%m-%d")    
         
+        profissional = self.request.GET.get('profissional')
+        
+        if profissional is not None:    
+            horarios = agenda_service.Agenda_Service().gera_intervalos('09:00', '20:00', data_evento, profissional)
+        else:
+            horarios = ''
+        
         context = {
-            'horarios' : agenda_service.Agenda_Service().gera_intervalos('09:00', '20:00', data_evento),
-            'profissionais' : perfil_service.PerfilService().get_profissionais()
+            'horarios' : horarios,
+            'profissionais' : perfil_service.PerfilService().get_profissionais(),
+            'profissional_selecionado' : profissional  
         }
 
         return render(self.request, 'agenda/novo_horario.html', context)
@@ -118,7 +128,18 @@ class Marcar(View):
         id_profissional = self.request.POST.get('profissional')
         profissional = User.objects.get(id=id_profissional)
         
+        if profissional is None:
+            messages.error(
+                    self.request,
+                    'Selecione um profissional'
+            )
+            return redirect('agenda:marcar')
+        
         agenda_service.Agenda_Service().adiciona_evento_formulario(horario_inicio_fim, data_evento, user, profissional)
+
+        #todo: enviar email
+        
+        #todo: redirecionar para uma pagina de sucesso
 
         return redirect('agenda:marcar')
 
