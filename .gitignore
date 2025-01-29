@@ -13,6 +13,7 @@
 loja_django/__pycache__
 /imagens/
 
+debug.log
 db.sqlite3
 passenger.log
 produto_produto.sql
