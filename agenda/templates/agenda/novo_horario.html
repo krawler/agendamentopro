@@ -43,7 +43,15 @@
                     <label for="">Profissional</label>
 					<select name="profissional" id="profissional" class="form-control">
 						{% for profissional in profissionais %}
-							<option value="{{ profissional.id }}">{{ profissional.username }}</option>
+							{% if profissional_selecionado  %}	
+							<option value="{{ profissional.id }}" selected>
+									{{ profissional.username }} 
+							</option>
+							{% else %}
+							<option value="{{ profissional.id }}">
+								{{ profissional.username }}
+							</option>
+							{% endif %}
 						{% endfor %}
 					</select>
                 </div>
@@ -81,6 +89,11 @@
 		  $("#data_evento").on('change', function(){
 			window.location.href = "?data_evento="+$(this).val();	
 		  });
+
+		  $("#profissional").on('change', function(){
+			window.location.href = "?data_evento="+$("#data_evento").val()+"&profissional="+$(this).val();	
+		  });
+		  
 	 });
 
 </script>
