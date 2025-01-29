@@ -101,7 +101,7 @@ class Agenda_Service():
 
         return qs_agendamento
     
-    def gera_intervalos(self, hora_inicio, hora_fim, data_evento):
+    def gera_intervalos(self, hora_inicio, hora_fim, data_evento, profissional):
 
         hora_inicio = datetime.strptime(f"{data_evento.year}-{data_evento.month}-{data_evento.day} {hora_inicio}", 
                                         "%Y-%m-%d %H:%M")
@@ -113,9 +113,13 @@ class Agenda_Service():
 
         intervalos = []
         while hora_inicio < hora_fim:
-            if self.get_agendamento_by_time(data_evento, hora_inicio=hora_inicio, hora_final=(hora_inicio + timedelta(minutes=50))):
+            hasAgendamento = self.get_agendamento_by_time(data_evento=data_evento, 
+                                            hora_inicio=hora_inicio, 
+                                            hora_final=(hora_inicio + timedelta(minutes=50)),
+                                            profissional=profissional) 
+            if hasAgendamento:
                 intervalos.append((hora_inicio.strftime('%H:%M'), (hora_inicio + timedelta(minutes=50)).strftime('%H:%M')))
-            hora_inicio += timedelta(minutes=50)
+            hora_inicio += timedelta(minutes=35)
 
         return intervalos    
     
@@ -162,13 +166,13 @@ class Agenda_Service():
         random_string = ''.join(random.choice(caracteres) for _ in range(tamanho))
         random_string = random_string.lower() 
 
-        # Insere os hifens nos locais corretos
         return f"{random_string[:8]}-{random_string[8:12]}-{random_string[12:16]}-{random_string[16:20]}-{random_string[20:]}"
     
-    def get_agendamento_by_time(self, data_evento, hora_inicio, hora_final):
+    def get_agendamento_by_time(self, data_evento, hora_inicio, hora_final, profissional):
         
         agendamento = Agendamento.objects.filter(
-                                            data_evento=data_evento
+                                            data_evento=data_evento,
+                                            profissional=profissional
                                             ).filter(
                                                 Q(hora_inicio__gte=hora_inicio.time()) &
                                                 Q(hora_inicio__lt=hora_final.time())).first()
