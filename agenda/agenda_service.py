@@ -1,6 +1,8 @@
 import json
 import random
 import string
+
+from agenda.email.py_email import PyEmail
 from .models import Agendamento
 from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import User
@@ -107,18 +109,19 @@ class Agenda_Service():
                                         "%Y-%m-%d %H:%M")
         hora_fim = datetime.strptime(f"{data_evento.year}-{data_evento.month}-{data_evento.day} {hora_fim}", 
                                      "%Y-%m-%d %H:%M")
-        #hora_inicio, hora_fim = hora_inicio + timedelta(hours=+3), hora_fim + timedelta(hours=+3)
+        
         if hora_inicio > hora_fim:
             raise ValueError("A hora de início deve ser anterior à hora de fim.")
 
         intervalos = []
         while hora_inicio < hora_fim:
-            hasAgendamento = self.get_agendamento_by_time(data_evento=data_evento, 
-                                            hora_inicio=hora_inicio, 
-                                            hora_final=(hora_inicio + timedelta(minutes=50)),
-                                            profissional=profissional) 
-            if hasAgendamento:
-                intervalos.append((hora_inicio.strftime('%H:%M'), (hora_inicio + timedelta(minutes=50)).strftime('%H:%M')))
+            if hora_inicio > datetime.now():    
+                hasAgendamento = self.get_agendamento_by_time(data_evento=data_evento, 
+                                                hora_inicio=hora_inicio, 
+                                                hora_final=(hora_inicio + timedelta(minutes=50)),
+                                                profissional=profissional) 
+                if hasAgendamento:
+                    intervalos.append((hora_inicio.strftime('%H:%M'), (hora_inicio + timedelta(minutes=50)).strftime('%H:%M')))
             hora_inicio += timedelta(minutes=35)
 
         return intervalos    
@@ -180,3 +183,18 @@ class Agenda_Service():
             return False
         return True
     
+    def envia_email(self, user, profissional, data_evento, horario_inicio_fim, request):
+        py_email = PyEmail(user.email)
+        data_evento = datetime.strptime(data_evento, '%Y-%m-%d')
+        data_evento = data_evento.strftime('%d/%m/%Y')
+        tp_horario_inicio_fim = eval(horario_inicio_fim)
+        horario_inicio = tp_horario_inicio_fim[0]
+        horario_fim = tp_horario_inicio_fim[1]
+        py_email.set_body(user=user, 
+                          profissional=profissional, 
+                          data_evento=data_evento, 
+                          horario_inicio=horario_inicio,
+                          horario_fim=horario_fim, 
+                          request=request)
+        py_email.enviar()
+        
