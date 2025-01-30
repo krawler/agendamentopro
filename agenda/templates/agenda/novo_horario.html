@@ -42,6 +42,11 @@
 				<div class="form-group">
                     <label for="">Profissional</label>
 					<select name="profissional" id="profissional" class="form-control">
+						{% if not profissional_selecionado  %}
+						<option value="" selected>
+							Selecione um profissional
+						</option>
+						{% endif %}
 						{% for profissional in profissionais %}
 							{% if profissional_selecionado  %}	
 							<option value="{{ profissional.id }}" selected>
