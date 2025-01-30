@@ -108,7 +108,7 @@ class Marcar(View):
         profissional = self.request.GET.get('profissional')
         
         if profissional is not None:    
-            horarios = agenda_service.Agenda_Service().gera_intervalos('09:00', '20:00', data_evento, profissional)
+            horarios = agenda_service.Agenda_Service().gera_intervalos('09:00', '21:00', data_evento, profissional)
         else:
             horarios = ''
         
@@ -126,18 +126,20 @@ class Marcar(View):
         data_evento = self.request.POST.get('data_evento')
         horario_inicio_fim = self.request.POST.get('horario_inicio_fim')
         id_profissional = self.request.POST.get('profissional')
-        profissional = User.objects.get(id=id_profissional)
         
-        if profissional is None:
+        if id_profissional is None or id_profissional == '':
             messages.error(
                     self.request,
                     'Selecione um profissional'
             )
             return redirect('agenda:marcar')
         
+        profissional = User.objects.get(id=id_profissional)
+        
         agenda_service.Agenda_Service().adiciona_evento_formulario(horario_inicio_fim, data_evento, user, profissional)
 
         #todo: enviar email
+        agenda_service.Agenda_Service().envia_email(user, profissional, data_evento, horario_inicio_fim, self.request)
         
         #todo: redirecionar para uma pagina de sucesso
 
