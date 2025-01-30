@@ -34,7 +34,6 @@
                     {% endif %}    
                     
                     {% if request.user.is_authenticated %}
-                        <a class="dropdown-item" href="{% url 'pedido:meuspedidos' %}">Meus Pedidos</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{% url 'perfil:logout' %}">Sair</a>
                     {% endif %}
@@ -54,34 +53,8 @@
                         Listagem de atendimentos    
                     </a>
 
-                </div>
-            </li>
-            {% endif %}
-            {% if request.user.is_authenticated %}
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle active" href="#" id="navbarRelatorio" role="button"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">             
-                        Relatórios    
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    
-                    <a class="dropdown-item" href="{% url 'perfil:atualizar' %}">
-                        Pedidos    
-                    </a>    
-                    <a class="dropdown-item" href="{% url 'perfil:login' %}">
-                        Usuários 
-                    </a>    
-                    <a class="dropdown-item" href="{% url 'perfil:criar' %}">
-                        Produtos
-                    </a>    
-                    <a class="dropdown-item" href="{% url 'perfil:criar' %}">
-                        Entrada de produtos
-                    </a>   
-                    <a class="dropdown-item" href="{% url 'perfil:criar' %}">
-                        Saída de produtos
-                    </a>     
-                    <a class="dropdown-item" href="{% url 'pedido:meuspedidos' %}">
-                        Acessos
+                    <a class="dropdown-item" href="{% url 'agenda:marcar' %}">
+                        Marcar atendimento    
                     </a>
                 </div>
             </li>

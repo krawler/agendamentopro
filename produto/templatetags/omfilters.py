@@ -53,3 +53,13 @@ def get_status_extenso(val):
         case 'P': return 'Preparando'
         case 'E': return 'Enviado'
         case 'F': return 'Finalizado'
+        
+@register.filter
+def formata_horario(val):
+    if val is not None:
+        if val != '':
+            val_first_hour = val[0] 
+            val_last_hour = val[1] 
+           
+            return f'Das {val_first_hour} às {val_last_hour}'
+           

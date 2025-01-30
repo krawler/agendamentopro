@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load omfilters %}
+
+{% load static %}
+
+{% block conteudo %}
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+	<style type="text/css" >
+		html, body{
+			margin:0;
+			padding:0;
+			height:100%;
+			overflow:hidden;
+		}
+		.yellow_section {
+			background-color: #ffa749;
+			opacity: 0.25;
+		}
+	</style>
+
+<div class="container d-flex vh-100" id="container" data-token="{{csrf_token}}"> 
+
+	<div class="card borderless">
+        <h4>Selecione a data e a hora disponíveis</h4>
+        <div class="card-body">
+            <form method="POST" action="" id="form_agendamento">
+                {% csrf_token %}
+                <div class="form-group contents date-picker">
+                    <label for="">Data</label>
+                    <input type="date" 
+							name="data_evento" 
+							id="data_evento" 
+							placeholder="Selecione a data"
+                           class="form-control" 
+						   aria-describedby="usuarioHelp">
+                </div>
+				<div class="form-group">
+                    <label for="">Profissional</label>
+					<select name="profissional" id="profissional" class="form-control">
+						{% for profissional in profissionais %}
+							<option value="{{ profissional.id }}">{{ profissional.username }}</option>
+						{% endfor %}
+					</select>
+                </div>
+                <div class="form-group">
+                    <label for="InputUsuario">Horário</label>
+					<select name="horario_inicio_fim" id="horario_inicio_fim" class="form-control">
+						{% for horario in horarios %}
+							<option value="{{ horario }}">{{ horario | formata_horario }}</option>
+						{% endfor %}
+					</select>
+                </div>
+                <button type="submit" id="btn_login_perfil" class="btn btn-primary btn-block btn-lg">
+                    Marcar
+                </button>  
+           </div>
+        </form>  
+	</div>	
+
+</div>
+
+<script>
+	
+	$(document).ready(function(){
+
+		  var url = window.location;
+		  let params = new URLSearchParams(url.search);
+		  
+		  if(params.has('data_evento')){
+			  data_evento = params.get('data_evento'); 
+			  $("#data_evento").val(data_evento);
+		  }else{
+			  $("#data_evento").val(new Date().toISOString().split('T')[0]);
+		  }		
+
+		  $("#data_evento").on('change', function(){
+			window.location.href = "?data_evento="+$(this).val();	
+		  });
+	 });
+
+</script>
+
+{% endblock %}
+

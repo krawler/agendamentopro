@@ -5198,6 +5198,7 @@ function calendarJs(ol, pl, ql) {
     }
     return u;
   };
+
   //primeiro parametro json event
   //segundo parametro booleano
   //terceiro parametro booleano
@@ -5206,8 +5207,13 @@ function calendarJs(ol, pl, ql) {
 
     
     var f = !1;
-    if (!w && (e = v(e, !0), W(a.from) && (a.from = new Date(a.from)), W(a.to) && (a.to = new Date(a.to)), W(a.repeatEnds) && (a.repeatEnds = new Date(a.repeatEnds)), W(a.created) && (a.created = new Date(a.created)), W(a.lastUpdated) && (a.lastUpdated = new Date(a.lastUpdated)), a.color === b.defaultEventBackgroundColor && (a.color = null), a.colorText === b.defaultEventTextColor && (a.colorText = null), a.colorBorder === b.defaultEventBorderColor && (a.colorBorder = null), a.from <= a.to)) {
-      
+    //if (!w && (e = v(e, !0), W(a.from) && (a.from = new Date(a.from)), W(a.to) && (a.to = new Date(a.to)), W(a.repeatEnds) && (a.repeatEnds = new Date(a.repeatEnds)), W(a.created) && (a.created = new Date(a.created)), W(a.lastUpdated) && (a.lastUpdated = new Date(a.lastUpdated)), a.color === b.defaultEventBackgroundColor && (a.color = null), a.colorText === b.defaultEventTextColor && (a.colorText = null), a.colorBorder === b.defaultEventBorderColor && (a.colorBorder = null), a.from <= a.to)) {
+    
+    a.from = new Date(a.from);
+    a.to = new Date(a.to);
+    
+    if (true){
+    
       var g = a.from;
       g = g.getFullYear() + "-" + g.getMonth() + "-" + g.getDate();
       var h = kc();
@@ -5451,16 +5457,18 @@ function calendarJs(ol, pl, ql) {
     }
   })(document, window, navigator, Math, JSON);
 
-  function atualizaEventoDia(d){
-  
+  function atualizaEventoDia(d){ 
+
     if(d.length > 1){
         if(d[0] != undefined){
-          evento = d[0];
+           evento = d[0];        
+
           if(! $(evento).hasClass("expired")){
 
             dateTimeFrom = d[1].from;
 
             if(dateTimeFrom > new Date()){
+
                 json_update = JSON.stringify(d[1]);
                 id_evento = d[1].id;
                 $.ajax({
@@ -5469,15 +5477,20 @@ function calendarJs(ol, pl, ql) {
                     url: "http://localhost:8000/atualizajson",
                     data: {
                         "id_evento": id_evento,
-                        "jsonEvent" : JSON.stringify(json_update),
+                        "jsonEvent" : json_update,
                         "csrfmiddlewaretoken": $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(jsonData) { 
-                      console.log(jsonData);
                       let jsonDataobj = JSON.parse(jsonData);
-                      console.log(jsonDataobj.title);
-
-                    }
+                          if (jsonData.length > 0){
+                             for (let i = 0; i < jsonDataobj.length; i++) {
+                              if(jsonDataobj[i].fields.json_evento != undefined){
+                                let json_event = JSON.parse(jsonDataobj[i].fields.json_evento);
+                                u.addEvent(json_event, !1, !1, !1);  
+                              } 
+                             }
+                          }                              
+                        }
                 });
               
             }

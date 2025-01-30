@@ -2,10 +2,12 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.models import User
+from perfil import perfil_service
 from .models import Agendamento
 from perfil.models import PerfilUsuario
 from . import agenda_service
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class DispachLoginRequired(View):
@@ -26,7 +28,8 @@ class Principal(DispachLoginRequired, View):
     
     def get(self, *args, **kwargs):
 
-        agendamentos = Agendamento.objects.all()   
+        user = self.request.user
+        agendamentos = Agendamento.objects.filter(profissional=user)   
         agendamentos = serializers.serialize('json', agendamentos)
         context = {
             'agendamentos' : agendamentos,
@@ -70,13 +73,14 @@ class Atualiza_Cliente(DispachLoginRequired, View):
 
 class Atualiza_Json(DispachLoginRequired, View):
     
-     def post(self, *args, **kwargs):
-        id_json_evento = self.request.POST.get('id_evento');
-        json_evento = self.request.POST.get('jsonEvent');
-        qs_retorno = agenda_service.Agenda_Service().atualiza_json(id_json_evento, json_evento);
-        json_data = serializers.serialize('json', qs_retorno)
-        return JsonResponse(json_data, safe=False) 
-
+    def post(self, *args, **kwargs):
+        id_json_evento = self.request.POST.get('id_evento')
+        json_evento = self.request.POST.get('jsonEvent')
+        agenda_service.Agenda_Service().atualiza_json(id_json_evento, json_evento)
+        qs_retorno = Agendamento.objects.filter(data_evento=datetime.today(), 
+                                                hora_inicio__gte=datetime.now())
+        json_retorno = serializers.serialize('json', qs_retorno)
+        return JsonResponse(json_retorno, safe=False)
 
 class Atualiza_Evento(DispachLoginRequired, View):
     
@@ -85,7 +89,36 @@ class Atualiza_Evento(DispachLoginRequired, View):
         hora_final = self.request.POST.get('hora_final')
         id_json_evento = self.request.POST.get('id_evento');
         json_evento = self.request.POST.get('jsonEvent');
-        qs_evento = agenda_service.Agenda_Service().atualiza_evento(id_json_evento, json_evento, hora_inicio, hora_final);
+        agenda_service.Agenda_Service().atualiza_evento(id_json_evento, json_evento, hora_inicio, hora_final);
         retorno = '{retorno : true}'
         return JsonResponse(retorno, safe=False)
+
+class Marcar(View):
+    
+    def get(self, *args, **kwargs):
+        
+        data_evento = self.request.GET.get('data_evento')
+        if data_evento is None:
+            data_evento = datetime.now()
+        else:
+            data_evento = datetime.strptime(data_evento, "%Y-%m-%d")    
+        
+        context = {
+            'horarios' : agenda_service.Agenda_Service().gera_intervalos('09:00', '20:00', data_evento),
+            'profissionais' : perfil_service.PerfilService().get_profissionais()
+        }
+
+        return render(self.request, 'agenda/novo_horario.html', context)
+    
+    def post(self, *args, **kwargs):
+        
+        user = self.request.user
+        data_evento = self.request.POST.get('data_evento')
+        horario_inicio_fim = self.request.POST.get('horario_inicio_fim')
+        id_profissional = self.request.POST.get('profissional')
+        profissional = User.objects.get(id=id_profissional)
+        
+        agenda_service.Agenda_Service().adiciona_evento_formulario(horario_inicio_fim, data_evento, user, profissional)
+
+        return redirect('agenda:marcar')
 
