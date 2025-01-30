@@ -10,6 +10,8 @@
 /perfil/templates/email/__pycache__
 /produto/templatetags/__pycache__
 /agenda/__pycache__
+/agenda/email/__pycache__
+/agenda/email/__init__.py
 
 
 loja_django/__pycache__
@@ -19,7 +21,7 @@ debug.log
 db.sqlite3
 passenger.log
 produto_produto.sql
-stripe_backup_code.txt
+twilio_2FA_recovery_code.txt
 
 produto/migrations/
 .produto_produto.sql.kate-swp
