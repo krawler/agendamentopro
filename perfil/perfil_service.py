@@ -96,4 +96,7 @@ class PerfilService():
             except ObjectDoesNotExist as obj_notfounf:
                 return HttpResponse("Produto não encontrado.", status=404)        
         except Exception as global_except:
-            return HttpResponse("Produto não encontrado.", status=404)            
+            return HttpResponse("Produto não encontrado.", status=404)     
+        
+    def get_profissionais(self):
+        return User.objects.filter(is_staff=True)      
