@@ -156,7 +156,7 @@ class Criar(BasePerfil):
         if self.request.session.get('url_destino') is not None:
             return redirect(self.request.session['url_destino'])
 
-        return redirect('perfil:atualizar')
+        return redirect('perfil:marcar')
            
 
 class Cadastro_concluido(View):
@@ -216,6 +216,10 @@ class Login(View):
         if PerfilService().validar_email(username):
             username = str(username).split('@')[0]
         
+        if username.isdigit():
+            telefone = username
+            username = PerfilUsuario.objects.get(telefone=telefone).usuario.username
+        
         usuario = authenticate(self.request, username=username, password=password)
         
         if not usuario:
@@ -227,11 +231,10 @@ class Login(View):
         
         login(self.request, user=usuario)
 
-        url_destino = self.request.session.get('url_destino')
-        if url_destino is not None:
-            return redirect(url_destino)
-        else:   
+        if self.request.user.is_staff: 
             return redirect('agenda:principal')     
+        
+        return redirect('agenda:marcar')
 
 
 class Logout(View):
