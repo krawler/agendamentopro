@@ -31,9 +31,7 @@ class Agenda_Service():
 
         return agenda
 
-    def adiciona_evento_formulario(self, hora_inicio_fim, data_evento, usuario):
-           
-        profissional = User.objects.filter(is_staff=True).first()
+    def adiciona_evento_formulario(self, hora_inicio_fim, data_evento, usuario, profissional):
         
         id_jsondiv_evento = self.gerar_string_aleatoria()
         
@@ -49,15 +47,16 @@ class Agenda_Service():
                                              horario_inicio, 
                                              horario_fim, 
                                              id_jsondiv_evento)
-        datetime_hora_inicio = data_evento.strptime(horario_inicio, '%H:%M')
-        datetime_hora_inicio = datetime_hora_inicio + timedelta(hours=+3)
-        datetime_horario_fim = data_evento.strptime(horario_fim, '%H:%M')
-        datetime_horario_fim = datetime_horario_fim + timedelta(hours=+3)
+        hora_inicio = datetime.strptime(f"{data_evento.year}-{data_evento.month}-{data_evento.day} {horario_inicio}", "%Y-%m-%d %H:%M")
+
+        hora_final = datetime.strptime(f"{data_evento.year}-{data_evento.month}-{data_evento.day} {horario_fim}", "%Y-%m-%d %H:%M")
+        #datetime_horario_fim = data_evento.strptime(horario_fim, '%H:%M')
+        #datetime_horario_fim = datetime_horario_fim + timedelta(hours=+3)
         agenda = Agendamento(pessoa=usuario,
                              profissional=profissional, 
-                             data_evento=data_evento, 
-                             hora_inicio=datetime_hora_inicio, 
-                             hora_final=datetime_horario_fim,
+                             data_evento=hora_inicio.date(), 
+                             hora_inicio=hora_inicio, 
+                             hora_final=hora_final,
                              json_evento=json_event,
                              id_jsondiv_evento=id_jsondiv_evento)
         agenda.save()
@@ -104,29 +103,27 @@ class Agenda_Service():
     
     def gera_intervalos(self, hora_inicio, hora_fim, data_evento):
 
-        # Converter as horas de string para objetos datetime
-        inicio = datetime.strptime(hora_inicio, '%H:%M')
-        fim = datetime.strptime(hora_fim, '%H:%M')
-
-        if inicio > fim:
+        hora_inicio = datetime.strptime(f"{data_evento.year}-{data_evento.month}-{data_evento.day} {hora_inicio}", 
+                                        "%Y-%m-%d %H:%M")
+        hora_fim = datetime.strptime(f"{data_evento.year}-{data_evento.month}-{data_evento.day} {hora_fim}", 
+                                     "%Y-%m-%d %H:%M")
+        #hora_inicio, hora_fim = hora_inicio + timedelta(hours=+3), hora_fim + timedelta(hours=+3)
+        if hora_inicio > hora_fim:
             raise ValueError("A hora de início deve ser anterior à hora de fim.")
 
         intervalos = []
-        while inicio < fim:
-            if self.get_agendamento_by_time(data_evento, hora_inicio=inicio + timedelta(hours=3), hora_final=inicio + timedelta(hours=3, minutes=50)):
-                intervalos.append((inicio.strftime('%H:%M'), (inicio + timedelta(minutes=50)).strftime('%H:%M')))
-            inicio += timedelta(minutes=50)
+        while hora_inicio < hora_fim:
+            if self.get_agendamento_by_time(data_evento, hora_inicio=hora_inicio, hora_final=(hora_inicio + timedelta(minutes=50))):
+                intervalos.append((hora_inicio.strftime('%H:%M'), (hora_inicio + timedelta(minutes=50)).strftime('%H:%M')))
+            hora_inicio += timedelta(minutes=50)
 
         return intervalos    
     
     def create_json_evento(self, title, dia, mes, ano, horario_inicio, horario_fim, id_jsondiv_evento):
        
-        hora_inicio = horario_inicio.split(':')[0]
-        minuto_inicio = horario_inicio.split(':')[1]
-        hora_fim = horario_fim.split(':')[0]
-        minuto_fim = horario_fim.split(':')[1]
-        data_from = datetime(ano, mes, dia, int(hora_inicio) + 3, int(minuto_inicio), 0, 0, timezone.utc)
-        data_to = datetime(ano, mes, dia, int(hora_fim) + 3, int(minuto_fim), 0, 0, timezone.utc)
+        data_from = datetime.strptime(f"{ano}-{mes}-{dia} {horario_inicio}", "%Y-%m-%d %H:%M")
+        data_to = datetime.strptime(f"{ano}-{mes}-{dia} {horario_fim}", "%Y-%m-%d %H:%M")
+        
         data_from_iso = data_from.isoformat().replace('+00:00', '.000Z')
         data_to_iso = data_to.isoformat().replace('+00:00', '.000Z')
         agora = datetime.now(timezone.utc).isoformat()
@@ -173,8 +170,8 @@ class Agenda_Service():
         agendamento = Agendamento.objects.filter(
                                             data_evento=data_evento
                                             ).filter(
-                                                Q(hora_inicio__gte=hora_inicio) &
-                                                Q(hora_inicio__lte=hora_final)).first()
+                                                Q(hora_inicio__gte=hora_inicio.time()) &
+                                                Q(hora_inicio__lt=hora_final.time())).first()
         if agendamento is not None:
             return False
         return True
