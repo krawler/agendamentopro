@@ -3,6 +3,8 @@ import random
 import string
 
 from agenda.email.py_email import PyEmail
+from agenda.whatsapp import py_whatsapp
+from perfil.models import PerfilUsuario
 from .models import Agendamento
 from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import User
@@ -121,7 +123,7 @@ class Agenda_Service():
                                                 hora_final=(hora_inicio + timedelta(minutes=50)),
                                                 profissional=profissional) 
                 if hasAgendamento:
-                    intervalos.append((hora_inicio.strftime('%H:%M'), (hora_inicio + timedelta(minutes=50)).strftime('%H:%M')))
+                    intervalos.append((hora_inicio.strftime('%H:%M'), (hora_inicio + timedelta(minutes=35)).strftime('%H:%M')))
             hora_inicio += timedelta(minutes=35)
 
         return intervalos    
@@ -198,3 +200,17 @@ class Agenda_Service():
                           request=request)
         py_email.enviar()
         
+    def envia_whatsapp(self, user, profissional, data_evento, horario_inicio_fim, request):
+        data_evento = datetime.strptime(data_evento, '%Y-%m-%d')
+        data_evento = data_evento.strftime('%d/%m/%Y')
+        tp_horario_inicio_fim = eval(horario_inicio_fim)
+        horario_inicio = tp_horario_inicio_fim[0]
+        horario_fim = tp_horario_inicio_fim[1]
+        telefone = PerfilUsuario.objects.get(usuario=user).telefone
+        #todo: verifica inicio de numero e adiciona +55
+        telefone = f'whatsapp:+55{telefone}'
+        mensagem_texto = f'''Ol&aacute; {user.first_name}, seu agendamento no dia {data_evento}, 
+                            das {horario_inicio} as {horario_fim},  foi conclu&iacute;do com sucesso.'''
+        
+        py_whatsapp.enviar_mensagem_whatsapp(telefone, mensagem_texto)
+            
