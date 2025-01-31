@@ -12,12 +12,10 @@
 /agenda/__pycache__
 /agenda/email/__pycache__
 /agenda/email/__init__.py
-/agenda/whatsapp/__pycache__
 
 
 loja_django/__pycache__
 /imagens/
-/backup/
 
 debug.log
 db.sqlite3

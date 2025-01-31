@@ -38,11 +38,18 @@ class BasePerfil(View):
             self.perfil = PerfilUsuario.objects.filter(usuario=self.request.user).first()
             self.usuario = User.objects.filter(username=self.request.user).first()
 
-            perfilForm = forms.PerfilSemEnderecoForm(
-                                data=self.request.POST or None,
-                                instance=self.perfil, 
-                                perfil=self.perfil) 
-        
+            
+            if self.perfil.perfil_endereco:
+                perfilForm = forms.PerfilComEnderecoForm(
+                                        data=self.request.POST or None,
+                                        instance=self.perfil, 
+                                        perfil=self.perfil)
+            else:
+                perfilForm = forms.PerfilSemEnderecoForm(
+                                    data=self.request.POST or None,
+                                    instance=self.perfil, 
+                                    perfil=self.perfil) 
+            
             self.context = {
                 'userform': 
                             forms.UserForm(
@@ -149,7 +156,7 @@ class Criar(BasePerfil):
         if self.request.session.get('url_destino') is not None:
             return redirect(self.request.session['url_destino'])
 
-        return redirect('agenda:marcar')
+        return redirect('perfil:marcar')
            
 
 class Cadastro_concluido(View):
