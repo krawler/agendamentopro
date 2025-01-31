@@ -9,6 +9,40 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
+            {% if request.user.is_authenticated %}
+                {% if request.user.is_staff %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" id="navbarRelatorio" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">             
+                                Sistema    
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">                    
+                            <a class="dropdown-item" href="{% url 'agenda:principal' %}">
+                                Agendador de atendimentos    
+                            </a>
+                            <a class="dropdown-item" href="{% url 'pedido:tabela' %}">
+                                Listagem de atendimentos    
+                            </a>
+
+                            <a class="dropdown-item" href="{% url 'agenda:marcar' %}">
+                                Marcar atendimento    
+                            </a>
+                        </div>
+                    </li>
+                    <form class="form-inline my-2 my-lg-0" action="{% url 'produto:busca' %}">
+                        <input class="form-control mr-sm-2" type="search" placeholder="o que procura?" aria-label="Search" name="termo">
+                        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Buscar</button>
+                    </form>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           href="{% url 'agenda:marcar' %}"
+                           style="color:#fff">
+                           Marcar atendimento
+                        </a>
+                    </li>
+                {% endif %}
+            {% endif %}
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -39,30 +73,7 @@
                     {% endif %}
                 </div>
             </li>
-            {% if request.user.is_authenticated %}
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle active" href="#" id="navbarRelatorio" role="button"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">             
-                        Sistema    
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">                    
-                    <a class="dropdown-item" href="{% url 'agenda:principal' %}">
-                        Agendador de atendimentos    
-                    </a>
-                    <a class="dropdown-item" href="{% url 'pedido:tabela' %}">
-                        Listagem de atendimentos    
-                    </a>
-
-                    <a class="dropdown-item" href="{% url 'agenda:marcar' %}">
-                        Marcar atendimento    
-                    </a>
-                </div>
-            </li>
-            {% endif %}
         </ul>
-        <form class="form-inline my-2 my-lg-0" action="{% url 'produto:busca' %}">
-            <input class="form-control mr-sm-2" type="search" placeholder="o que procura?" aria-label="Search" name="termo">
-            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Buscar</button>
-        </form>
+
     </div>
 </nav>
