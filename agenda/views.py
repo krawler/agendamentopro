@@ -106,6 +106,7 @@ class Marcar(View):
             data_evento = datetime.strptime(data_evento, "%Y-%m-%d")    
         
         profissional = self.request.GET.get('profissional')
+        profissional = User.objects.filter(id=profissional).first()
         
         if profissional is not None:    
             horarios = agenda_service.Agenda_Service().gera_intervalos('09:00', '21:00', data_evento, profissional)
@@ -136,12 +137,30 @@ class Marcar(View):
         
         profissional = User.objects.get(id=id_profissional)
         
-        agenda_service.Agenda_Service().adiciona_evento_formulario(horario_inicio_fim, data_evento, user, profissional)
+        agendamento = agenda_service.Agenda_Service().adiciona_evento_formulario(horario_inicio_fim, 
+                                                                                 data_evento, 
+                                                                                 user, 
+                                                                                 profissional)
 
-        #todo: enviar email
-        agenda_service.Agenda_Service().envia_email(user, profissional, data_evento, horario_inicio_fim, self.request)
+        agenda_service.Agenda_Service().envia_email(user, 
+                                                    profissional, 
+                                                    data_evento, 
+                                                    horario_inicio_fim, 
+                                                    self.request)
         
-        #todo: redirecionar para uma pagina de sucesso
+        agenda_service.Agenda_Service().envia_whatsapp(user, 
+                                                       profissional, 
+                                                       data_evento, 
+                                                       horario_inicio_fim, 
+                                                       self.request)         
+       
+        context = {
+            'agendamento': agendamento,
+        }
+        
+        return render(self.request, 
+                      'agenda/agendamento_concluido.html', 
+                      context)
 
-        return redirect('agenda:marcar')
+       
 
