@@ -47,16 +47,15 @@
 							Selecione um profissional
 						</option>
 						{% endif %}
+					    {% if profissional_selecionado  %}	
+						<option value="{{ profissional_selecionado.id }}" selected>
+								{{ profissional_selecionado.username }}
+						</option>
+						{% endif %}
 						{% for profissional in profissionais %}
-							{% if profissional_selecionado  %}	
-							<option value="{{ profissional.id }}" selected>
-									{{ profissional.username }} 
-							</option>
-							{% else %}
 							<option value="{{ profissional.id }}">
 								{{ profissional.username }}
 							</option>
-							{% endif %}
 						{% endfor %}
 					</select>
                 </div>
