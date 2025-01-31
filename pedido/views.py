@@ -14,7 +14,6 @@ from .models import Pedido, ItemPedido
 from .email.py_email import PyEmail 
 from datetime import datetime, date
 from pprint import pprint
-import stripe
 
 class DispachLoginRequired(View):
     
@@ -32,32 +31,7 @@ class DispachLoginRequired(View):
 
 class Pagar(DispachLoginRequired, View):
     
-    stripe.api_key = 'sk_test_51PRDqWFqNwY82ww5DnAS83DgAsvwPRLbVCTtcHDoWXU8G8I4UGy13f5LHXYsQsl3wDlgFSBdRRMzXeILk8Blenhd00BmZJK1Me'
-    
-    def create_checkout_session(self, variacoes):
-        
-        #TODO: Falta passar a quantidade do carrinho
-            
-        line_items = []       
-        for variacao in variacoes:
-            line_items.append({
-                'price': variacao.id_preco_stripe,
-                'quantity': 1
-            })
-            
-        try:
-            checkout_session = stripe.checkout.Session.create(
-                line_items=line_items,
-                mode='payment',
-                success_url='http://localhost:8000/pedido/salvarpedido',
-                cancel_url='http://localhost:8000/produto/resumodacompra',
-                stripe_account='acct_1PRDqWFqNwY82ww5'
-            )
-        except Exception as e:
-            return str(e)
-
-        return redirect(checkout_session.url, code=303)
- 
+  
     def get(self, *args, **kwargs):
         
         if not self.request.session.get('carrinho'):
@@ -68,7 +42,9 @@ class Pagar(DispachLoginRequired, View):
         bd_variacoes = list(
             Variacao.objects.filter(id__in=carrinho_variacao_ids)
         )
-        return self.create_checkout_session(bd_variacoes)
+        
+        return redirect('pedido:salvarpedido')
+
 
 class SalvarPedido(View):    
     
