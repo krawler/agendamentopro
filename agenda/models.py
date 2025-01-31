@@ -22,6 +22,9 @@ class Agendamento(models.Model):
 class Configuracao(models.Model):
     url_atualiza_json = models.CharField(max_length=100)
     tempo_duracao_evento = models.IntegerField()
+    twilio_account_sid = models.CharField(max_length=100, null=True)
+    twilio_auth_token = models.CharField(max_length=100, null=True)
+    twilio_phone_number = models.CharField(max_length=100, null=True)
     
     def __str__(self):
         return 'configuração padrão'
