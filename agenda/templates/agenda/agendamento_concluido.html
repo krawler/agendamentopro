@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load omfilters %}
+{% load static %}
+{% block conteudo %}
+
+<div class="row">
+    <div class="col">
+        <h3>{{pedido}}</h3>
+        <div class="row mt-4">
+            <h5 class="col">Seu agendamento foi concluído com sucesso</h5>
+    
+        </div>
+        <div class="row">
+            <p class="ml-3">Um email foi enviado para {{request.user.email}} com as informações desse agendamento
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="col-lg-4 font-weight-bold divleft">Profissional selecionado:</div>
+                <div class="col-lg-4 divleft">{{agendamento.profissional.username}}</div>
+                <div class="col-lg-4 mt-2 font-weight-bold divleft">Data do atendimento</div>
+                <div class="col-lg-4 divleft">{{agendamento.data_evento | formata_br_date}}</div>
+                <div class="col-lg-4 mt-2 font-weight-bold divleft">Hora do início do atendimento</div>
+                <div class="col-lg-4 divleft">{{agendamento.hora_inicio | formata_br_hora}}</div>
+                <div class="col-lg-4 mt-2 font-weight-bold divleft">Hora do final do atendimento</div>
+                <div class="col-lg-4 divleft">{{agendamento.hora_final | formata_br_hora}}</div>
+            </div>
+        </div>  
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col">
+        <a href="{% url 'agenda:marcar' %}" 
+            class="btn btn-primary btn-block btn-lg">
+            Marcar outro atendimento
+        </a>  
+    </div>
+    <div class="col">
+        <a href="{% url 'perfil:atualizar' %}" 
+            class="btn btn-primary btn-block btn-lg">
+            Ver ou alterar meus dados
+        </a>  
+    </div>
+</div>
+{% endblock %}
