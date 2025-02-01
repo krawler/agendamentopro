@@ -173,7 +173,7 @@ tbody > tr.selected > * {
     color : rgb(var(--dt-row-selected-text));
 }
 
-#exampleInputPassword, #username, #btn_login_perfil{
+#username, #btn_login_perfil{
     max-width:350px;
 }
 
@@ -181,8 +181,8 @@ tbody > tr.selected > * {
     max-width: 150px;
 }
 
-#id_idade{
-    max-width: 100px;
+#id_telefone{
+    max-width: 200px;
 }
 
 #id_numero{
@@ -193,7 +193,7 @@ tbody > tr.selected > * {
     max-width: 350px;
 }
 
-#id_email, #id_endereco, #id_complemento {
+#id_email, #id_endereco, #id_nome_completo {
     max-width: 600px;
 }
 
@@ -220,4 +220,8 @@ tbody > tr.selected > * {
 
 .largura_toda{
     width: 100%;
+}
+
+.itemmenu_direita_esquerda{
+    left: -110px;
 }
