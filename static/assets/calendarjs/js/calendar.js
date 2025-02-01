@@ -5260,10 +5260,10 @@ function calendarJs(ol, pl, ql) {
   u.updateEvent = function(a, c, d, e) {
     
     AtualizaAgendamento(c);
-    $("#dialog").dialog({height: 600,
-        width: 450,
-        modal: true,
-    });
+    // $("#dialog").dialog({height: 600,
+    //     width: 450,
+    //     modal: true,
+    // });
     
     var f = !1;
     !w && (f = u.removeEvent(a, !1, !1)) && (d = v(d, !0), e = v(e, !0), f = u.addEvent(c, d, !1), qb(), f && e && A(b.events.onEventUpdated, c));
@@ -5461,8 +5461,8 @@ function calendarJs(ol, pl, ql) {
   function atualizaEventoDia(d){ 
     
     //todo: parametrizar
-    //var urlAtualizaJson = "https://raradmco.tx1.fcomet.com/agendamentopro/atualizajson"
-    var urlAtualizaJson = "http://localhost:8000/atualizajson"
+    var urlAtualizaJson = "https://raradmco.tx1.fcomet.com/agendamentopro/atualizajson"
+    //var urlAtualizaJson = "http://localhost:8000/atualizajson"
     if(d.length > 1){
         if(d[0] != undefined){
            evento = d[0];        
@@ -5539,7 +5539,7 @@ function calendarJs(ol, pl, ql) {
     $.ajax({
       type: "POST",
       dataType: "json",
-      url: "http://localhost:8000",
+      url: "https://raradmco.tx1.fcomet.com/agendamentopro",
       data: {
           "hora_inicio": hora_inicio,
           "hora_final": hora_final,
@@ -5588,7 +5588,7 @@ function AtualizaAgendamento(jsonEvent){
     $.ajax({
         type: "POST",
         dataType: "json",
-        url: "http://localhost:8000/",
+        url: "https://raradmco.tx1.fcomet.com/agendamentopro",
         data: {
             "hora_inicio": hora_inicio,
             "hora_final": hora_final,
