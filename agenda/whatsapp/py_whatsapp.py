@@ -1,5 +1,6 @@
 from twilio.rest import Client
 from django.conf import settings
+from agenda.models import Configuracao
 
 def enviar_mensagem_whatsapp(numero_cliente, mensagem):
     """
@@ -11,14 +12,16 @@ def enviar_mensagem_whatsapp(numero_cliente, mensagem):
     """
 
     # Credenciais da API Twilio
-    account_sid = settings.TWILIO_ACCOUNT_SID
-    auth_token = settings.TWILIO_AUTH_TOKEN
+    config = Configuracao.objects.first() 
+    account_sid = config.twilio_account_sid  # twilio_account_sid
+    auth_token = config.twilio_auth_token  # twilio_auth_token
+
 
     client = Client(account_sid, auth_token)
 
     try:
         message = client.messages.create(
-            from_=settings.TWILIO_PHONE_NUMBER,  # Seu número do WhatsApp Business
+            from_=config.twilio_phone_number,  # Seu número do WhatsApp Business
             body=mensagem,
             to=numero_cliente  # Formato para o WhatsApp
         )
