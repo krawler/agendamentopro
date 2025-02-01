@@ -53,15 +53,9 @@ class BasePerfil(View):
                 'perfilform': perfilForm,
                 'pagina_cadastro': True 
             }
-        else:
-            perfil_endereco_url_get = self.request.GET.get('perfil_endereco')
-            perfil_form = None
-            if perfil_endereco_url_get == 'true':
-                perfil_endereco = True
-                perfil_form = forms.PerfilComEnderecoForm(data=self.request.POST or None)
-            elif perfil_endereco_url_get == 'false':
-                perfil_endereco = False
-                perfil_form = forms.PerfilSemEnderecoForm(data=self.request.POST or None)    
+        else:            
+            
+            perfil_form = forms.PerfilSemEnderecoForm(data=self.request.POST or None)    
             
             self.context = {
                 'userform': forms.UserForm(data=self.request.POST or None),
@@ -143,7 +137,7 @@ class Criar(BasePerfil):
         
         self.request.session['carrinho'] = self.carrinho
         self.request.session.save()      
-        msg = 'Seu cadastro foi atualizado com sucesso'  
+        msg = 'Seu cadastro foi realizado com sucesso'  
         messages.success(self.request, msg)  
 
         if self.request.session.get('url_destino') is not None:
