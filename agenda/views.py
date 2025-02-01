@@ -99,6 +99,9 @@ class Marcar(View):
     
     def get(self, *args, **kwargs):
         
+        user = self.request.user
+        if not user.is_authenticated:
+            return redirect('perfil:login')
         data_evento = self.request.GET.get('data_evento')
         if data_evento is None:
             data_evento = datetime.now()
