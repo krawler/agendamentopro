@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% load omfilters %}
+
+{% load static %}
+
+{% block conteudo %}
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+<h1 class="text-center">Atendimentos</h1>
+
+<br />
+
+<table id="table_id" class="display">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Pessoa</th>
+            <th>Data</th>
+            <th>Início</th>
+            <th>Termino</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for agendamento in agendamentos %}
+        <tr profissional="{{agendamento.profissional.first_name}}">
+            <td class="dt-control" id="{{agendamento.id}}"></td> 
+            <td class="text-left">{{agendamento.pessoa.first_name}}</td>
+            <td>{{agendamento.data_evento|formata_br_date}}</td>
+            <td>{{agendamento.hora_inicio|formata_br_hora}}</td>
+            <td style="width: 10%">{{agendamento.hora_final|formata_br_hora}}</td>
+        </tr>
+        
+        {% endfor %}
+    </tbody>
+</table>
+<div id="dialog-confirm-status" class="hide" title="Alteração da situação do pedido">
+    <p>
+        <span class="ui-icon ui-icon-alert" 
+            style="float:left; margin:12px 12px 20px 0;">
+        </span>
+        <span id="msg-de-para">Isso irá alterar o status do pedido. Você tem certeza?</span>
+    </p>
+</div>  
+<div id="dialog-confirm-deactivate" class="hide" title="Desativação do pedido">
+    <p>
+        <span class="ui-icon ui-icon-alert" 
+            style="float:left; margin:12px 12px 20px 0;">
+        </span>
+        Isso irá desativar o pedido e você não poderá usá-lo no sistema da loja . Você tem certeza?
+    </p>
+</div>  
+
+
+<script>
+    $(document).ready(function(){
+        
+        $.noConflict();
+
+        const table = $('#table_id').DataTable({
+            colReorder: true,
+            keys: true,
+            pageLength:20,
+            layout: {
+                topStart: {
+                    buttons: ['print', 'excel', 'pdf', 'csv', 'colvis' ]
+                }
+            }
+        });
+
+
+        $('.buttons-colvis').children('span').html('Colunas');
+        $('.dt-search').children('label').html('Procurar')
+        var showing = $("#table_id_info").html()
+        showing = showing.replace('Showing','Exibindo').replace('entries', 'registros')
+                                             .replace('to','a')
+                                             .replace('of','de');
+        $("#table_id_info").html(showing);
+
+        $(".dt-paging-button").on('click', function(){
+            $("#table_id_info").html(showing);
+        });
+
+        table.on('requestChild.dt', function (e, row) {
+            row.child(format(row.data())).show();
+        });        
+
+        table.on('click', 'td.dt-control', function (e) {
+            
+            let tr  = e.target.closest('tr');
+            let row = table.row(tr);
+            let id_evento = $(this).attr("id")
+
+            if (row.child.isShown()) {
+                row.child.hide();
+                $("#tabela_variacoes").remove();
+                $(".titulo_h5").remove();
+                $(".linha_detalhe").remove();
+            }
+            else {
+                row.child(format(row.data(), 
+                                id_evento, 
+                                $(tr).attr('profissional'), 
+                                $(tr).attr('data-token'))).show();
+            }
+        }); 
+        
+    });
+
+    function format(d, id_evento,profissional,token) {
+        return (
+            '<div class="row">' +
+                '<div class="col" >' +
+                '<dl>' +
+                '<dt>Pessoa:</dt>' +
+                '<dd>' +
+                 d[1] +
+                '</dd>' +
+                '<dt>Profissional:</dt>' +
+                '<dd>' +
+                profissional +
+                '' +
+                '</dl>' +
+                '</div>' +
+                '<div class="col" style=""">' +
+                    '<dl>' +
+                    '<dt>Data:</dt>' +
+                    '<dd>' +
+                    d[2] +
+                    '</dd>' +
+                    '<dt>Horário:</dt>' +
+                    '<dd> Das '+ d[3] + ' as' + d[4] + '</dd>' +
+                    '</dd>' +
+                '</div>' +    
+            '</div>' +    
+            '<div class="row" style=""">' +
+                '<button data-status="' + d[2] + '" data-token="' + token + '" class="btn btn-secondary btn-block btn-lg btnChangeStatus"' +
+                                'onclick="showDialogModalStatus('+ id_evento +',' + token + ')">' +
+                ' Desativar esse atendimento ' + '</button>'+ 
+                '<button class="btn btn-primary btn-block btn-lg">' +
+                ' Ver todos os pedidos dessa pessoa </button>'+ 
+            '</div>' +   
+            '</br>'
+        );
+    }
+
+
+    function formata_preco(numero)
+    {
+        if(numero != undefined)
+            return numero.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        return '';
+    }
+
+    function apenasNumeros(string) 
+    {
+        var numsStr = string.replace(/[^0-9]/g,'');
+        return parseInt(numsStr);
+    }
+
+    function getNextStep(status){
+        
+        switch(status){
+            case 'Aprovado': return 'Preparando';
+            case 'Criado': return 'Aprovado';
+            case 'Reprovado': return 'Criado';
+            case 'Preparando': return 'Enviado';
+            case 'Enviado': return 'Finalizado';
+            case 'Finalizado': return 'Preparando';
+        }
+    }
+    function getStatusNameExtenso(sigla){
+
+        switch(sigla){
+            case 'A': return 'Aprovado';
+            case 'C': return 'Criado';
+            case 'R': return 'Reprovado';
+            case 'P': return 'Preparando';
+            case 'E': return 'Enviado';
+            case 'F': return 'Finalizado';
+        }
+    }
+    
+</script> 
+
+{% endblock conteudo %}
