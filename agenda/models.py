@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from datetime import datetime
 from django.utils import timezone
 
+
 class Agendamento(models.Model):
     pessoa = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='user_pessoa')
     profissional = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name='user_profissional')
@@ -19,12 +20,18 @@ class Agendamento(models.Model):
         data_evento = self.data_evento.strftime('%d/%m/%Y')
         return f'{data_evento} - {self.hora_inicio} - {self.hora_final}' 
 
+
 class Configuracao(models.Model):
     url_atualiza_json = models.CharField(max_length=100)
     tempo_duracao_evento = models.IntegerField()
     twilio_account_sid = models.CharField(max_length=100, null=True)
     twilio_auth_token = models.CharField(max_length=100, null=True)
     twilio_phone_number = models.CharField(max_length=100, null=True)
+    url_base = models.CharField(max_length=100, null=True)
+    email_host = models.CharField(max_length=100, null=True)
+    email_smtp = models.CharField(max_length=100, null=True)
+    email_port = models.CharField(max_length=100, null=True)
+    email_host_password = models.TextField(max_length=100, null=True)
     
     def __str__(self):
         return 'configuração padrão'
