@@ -9,6 +9,7 @@ from perfil.models import PerfilUsuario
 from . import agenda_service
 from datetime import datetime, timedelta
 from django.contrib import messages
+from django.views.generic.list import ListView
 
 
 class DispachLoginRequired(View):
@@ -165,5 +166,29 @@ class Marcar(View):
                       'agenda/agendamento_concluido.html', 
                       context)
 
-       
+
+class Tabela(DispachLoginRequired, ListView):
+    model = Agendamento
+    template_name = 'agenda/tabela.html'
+    context_object_name = 'agendamentos'
+    ordering = ['-id']
+    
+    def get(self, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        
+        context = {'agendamentos': self.object_list}
+        
+        return render(self.request, 
+                      self.template_name, 
+                      context)
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     agendamentos = context['agendamentos']
+    #     for agendamento in agendamentos:     
+    #         if agendamento.pessoa is not None:       
+    #             perfil = agendamento.pessoa.perfilusuario
+    #             agendamento.perfil_data = perfil
+    #     context['agendamentos'] = agendamentos
+    #     return context
 
