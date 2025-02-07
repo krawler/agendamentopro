@@ -5,7 +5,7 @@ import string
 from agenda.email.py_email import PyEmail
 from agenda.whatsapp import py_whatsapp
 from perfil.models import PerfilUsuario
-from .models import Agendamento
+from .models import Agendamento, MensagemFila
 from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -208,9 +208,29 @@ class Agenda_Service():
         horario_fim = tp_horario_inicio_fim[1]
         telefone = PerfilUsuario.objects.get(usuario=user).telefone
         #todo: verifica inicio de numero e adiciona +55
-        telefone = f'whatsapp:+55{telefone}'
+        telefone = f'+55{telefone}'
         mensagem_texto = f'''Ol&aacute; {user.first_name}, seu agendamento no dia {data_evento}, 
                             das {horario_inicio} as {horario_fim},  foi conclu&iacute;do com sucesso.'''
         
         py_whatsapp.enviar_mensagem_whatsapp(telefone, mensagem_texto)
-            
+    
+    def get_mensagens_fila(self):
+        return MensagemFila.objects.all()        
+    
+    def add_mensagem_fila(self, user, profissional, data_evento, horario_inicio_fim, request):
+        tp_horario_inicio_fim = eval(horario_inicio_fim)
+        horario_inicio = tp_horario_inicio_fim[0]    
+        horario_fim = tp_horario_inicio_fim[1]
+        
+        telefone = PerfilUsuario.objects.get(usuario=user).telefone
+        telefone = f'+55{telefone}'
+        
+        mensagem_texto = f'''Ol&aacute; {user.first_name}, seu agendamento no dia {data_evento}, 
+                            das {horario_inicio} as {horario_fim},  foi conclu&iacute;do com sucesso.'''
+        mensagem_fila = MensagemFila(user=user, 
+                                     profissional=profissional, 
+                                     mensagem=mensagem_texto)
+        
+        from .models import fila_mensagens
+        
+        fila_mensagens.append(mensagem_fila)

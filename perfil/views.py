@@ -178,16 +178,28 @@ class Atualizar(Criar):
 
 
 class Login(View):
+    
+    def render_cacheless(self, action, path, context):
+        response = render(action, path, context)
+        response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response["Pragma"] = "no-cache"
+        response["Expires"] = "0"
+        
+        return response
 
     def get(self, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            if self.request.user.is_staff:
+                return redirect('agenda:principal')
+            return redirect('agenda:marcar')
 
+        #if 'HTTP_CACHE_CONTROL' in self.request.META and 'no-cache' in self.request.META['HTTP_CACHE_CONTROL']:
         url = self.request.GET.get('url')
         self.request.session['url_destino'] = url
-
-        contexto = {
-            'area_sem_produtos' : True
-        }
-        return render(self.request, 'perfil/login.html', contexto)
+        
+        render_return = self.render_cacheless(self.request, 'perfil/login.html', {})
+        
+        return render_return
 
     def post(self, *args, **kwargs):
         username = self.request.POST.get('username')

@@ -152,11 +152,11 @@ class Marcar(View):
                                                     horario_inicio_fim, 
                                                     self.request)
         
-        agenda_service.Agenda_Service().envia_whatsapp(user, 
-                                                       profissional, 
-                                                       data_evento, 
-                                                       horario_inicio_fim, 
-                                                       self.request)         
+        agenda_service.Agenda_Service().add_mensagem_fila(user, 
+                                                           profissional, 
+                                                           data_evento, 
+                                                           horario_inicio_fim, 
+                                                           self.request)         
        
         context = {
             'agendamento': agendamento,
@@ -192,3 +192,11 @@ class Tabela(DispachLoginRequired, ListView):
     #     context['agendamentos'] = agendamentos
     #     return context
 
+class Mensagens(View):
+    
+    from .models import fila_mensagens
+    
+    def get(self, *args, **kwargs):
+        mensagens = self.fila_mensagens
+        json_data = serializers.serialize('json', mensagens)
+        return JsonResponse(json_data, safe=False)

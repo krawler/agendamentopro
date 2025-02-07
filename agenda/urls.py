@@ -10,4 +10,5 @@ urlpatterns = [
     path('atualizaevento', views.Atualiza_Evento.as_view(), name="atualizaevento"),
     path('marcar', views.Marcar.as_view(), name="marcar"),
     path('tabela', views.Tabela.as_view(), name="tabela"),
+    path('mensagens', views.Mensagens.as_view(), name="mensagens"),
 ]
