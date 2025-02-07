@@ -3,9 +3,10 @@ from django.contrib.auth.models import User
 from datetime import datetime
 from django.utils import timezone
 
+
 class Agendamento(models.Model):
-    pessoa = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='user_pessoa')
-    profissional = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name='user_profissional')
+    pessoa = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user_pessoa')
+    profissional = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=False, related_name='user_profissional')
     titulo = models.TextField(max_length=50)
     data_evento = models.DateField(default=datetime.now().date())
     hora_inicio = models.TimeField(default=timezone.now().time())
@@ -28,4 +29,19 @@ class Configuracao(models.Model):
     
     def __str__(self):
         return 'configuração padrão'
+
+
+fila_mensagens = []
+
+
+class MensagemFila(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user_mensagem')
+    profissional = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=False, related_name='agendamento_profissional')
+    mensagem = models.TextField(max_length=500, null=False)
+    #data_evento = models.DateField(default=datetime.now().date())
+    #hora_inicio = models.TimeField(default=timezone.now().time())
+    #hora_final = models.TimeField(default=timezone.now().time())
+    desativado = models.BooleanField(default=False)
     
+    class Meta:
+        managed = False
