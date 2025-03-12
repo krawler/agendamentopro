@@ -1,4 +1,4 @@
 import os
 import sys
 
-from loja_django.wsgi import application
+from agendamento.wsgi import application
