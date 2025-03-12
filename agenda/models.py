@@ -37,16 +37,16 @@ class Configuracao(models.Model):
         return 'configuração padrão'
 
 
-fila_mensagens = []
+fila_mensagens = {}
 
 
 class MensagemFila(models.Model):
+    agendamento = models.ForeignKey(Agendamento, on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user_mensagem')
     profissional = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=False, related_name='agendamento_profissional')
     mensagem = models.TextField(max_length=500, null=False)
-    #data_evento = models.DateField(default=datetime.now().date())
-    #hora_inicio = models.TimeField(default=timezone.now().time())
-    #hora_final = models.TimeField(default=timezone.now().time())
+    telefone = models.CharField(max_length=15, null=False)
+    telefone_profissional = models.CharField(max_length=15, null=False)
     desativado = models.BooleanField(default=False)
     
     class Meta:
