@@ -1,3 +1,4 @@
+'''
 from twilio.rest import Client
 from django.conf import settings
 from agenda.models import Configuracao
@@ -30,3 +31,4 @@ def enviar_mensagem_whatsapp(numero_cliente, mensagem):
     except Exception as e:
         print(f"Erro ao enviar mensagem para {numero_cliente}: {e}")
         return False
+'''    
