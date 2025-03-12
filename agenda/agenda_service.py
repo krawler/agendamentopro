@@ -1,6 +1,8 @@
 import json
 import random
 import string
+import requests
+import json
 
 from agenda.email.py_email import PyEmail
 from agenda.whatsapp import py_whatsapp
@@ -9,6 +11,8 @@ from .models import Agendamento, MensagemFila
 from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import User
 from django.db.models import Q
+from .models import fila_mensagens
+
 
 class Agenda_Service():
 
@@ -217,20 +221,64 @@ class Agenda_Service():
     def get_mensagens_fila(self):
         return MensagemFila.objects.all()        
     
-    def add_mensagem_fila(self, user, profissional, data_evento, horario_inicio_fim, request):
+    def add_mensagem_fila(self, user, profissional, data_evento, horario_inicio_fim, agendamento):
         tp_horario_inicio_fim = eval(horario_inicio_fim)
         horario_inicio = tp_horario_inicio_fim[0]    
         horario_fim = tp_horario_inicio_fim[1]
         
         telefone = PerfilUsuario.objects.get(usuario=user).telefone
-        telefone = f'+55{telefone}'
+        telefone = f'{telefone}'
         
-        mensagem_texto = f'''Ol&aacute; {user.first_name}, seu agendamento no dia {data_evento}, 
-                            das {horario_inicio} as {horario_fim},  foi conclu&iacute;do com sucesso.'''
-        mensagem_fila = MensagemFila(user=user, 
+        mensagem_texto = f'''
+                         Ola {user.first_name}, seu agendamento no dia {data_evento}, das {horario_inicio} as {horario_fim}, foi concluido com sucesso.
+                         '''
+        mensagem_fila = MensagemFila(agendamento=agendamento,
+                                     user=user, 
                                      profissional=profissional, 
-                                     mensagem=mensagem_texto)
+                                     mensagem=mensagem_texto,
+                                     telefone=telefone,
+                                     telefone_profissional="14996064031")
         
-        from .models import fila_mensagens
+        fila_mensagens[agendamento.id] = mensagem_fila
         
-        fila_mensagens.append(mensagem_fila)
+        return fila_mensagens
+        
+    def envia_sms(self, user, data_evento, agendamento, horario_inicio_fim):
+        data_evento = datetime.strptime(data_evento, '%Y-%m-%d')
+        data_evento = data_evento.strftime('%d/%m/%Y')
+        telefone = PerfilUsuario.objects.get(usuario=user).telefone
+        tp_horario_inicio_fim = eval(horario_inicio_fim)
+        horario_inicio = tp_horario_inicio_fim[0]    
+        horario_fim = tp_horario_inicio_fim[1]
+
+        url = "https://disparo.smsdobrasil.com.br/api/v2/sms/"
+        
+        mensagem_texto = f'''Ola {user.first_name}, seu agendamento no dia {data_evento}, das {horario_inicio} as {horario_fim}, foi concluido com sucesso.'''
+
+        payload = {
+            'sendSmsRequest': {
+                'to': telefone,
+                'message': mensagem_texto,
+                'id': agendamento.id,
+                'serviceId': 0,
+                'schedule': "",
+                'callbackUrl': "",
+                'costCenterName': "centro_geral",
+                'checkWhitelist': True,
+                'checkBlacklist': True,
+                'blacklistVars': [],
+                'variables': {
+                    'token': "string",
+                }
+            }
+        }
+        headers = {'Accept': 'application/json',
+                   'Content-Type': 'application/json',
+                   'Authorization': 'Basic UkFGQUVMUkFNT1M6NGc1Qjg0SzRZMkI='
+        }
+
+        response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
+
+        print(response.text.encode('utf8'))
+
+        #todo: verifica inicio de numero e adiciona +55    
