@@ -156,7 +156,6 @@ class Marcar(View):
                                                     horario_inicio_fim, 
                                                     self.request)
         
-      #  fila_mensagens[agendamento.id] = agenda_service.Agenda_Service().add_mensagem_fila(user, 
         agenda_service.Agenda_Service().envia_sms(user, data_evento, agendamento, horario_inicio_fim)   
        
         context = {
