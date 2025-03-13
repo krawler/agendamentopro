@@ -35,15 +35,11 @@
                 </button>  
            </div>
         </form>  
-
-        <p class="mt-4">Se esqueceu sua senha, clique aqui para cadastrar uma nova senha:</p>
         <div class="card-body">
             <a href="{% url 'perfil:password_reset' %}" class="btn btn-primary btn-block btn-lg btn_login">
                 Esqueci minha senha
             </a>     
         </div>
-
-        <p class="mt-4">Se não tem cadastro, clique aqui para se cadastrar:</p>
         <div class="card-body">
             <a href="{% url 'perfil:criar' %}?perfil_endereco=false" class="btn btn-primary btn-block btn-lg btn_login">
                 Cadastrar
