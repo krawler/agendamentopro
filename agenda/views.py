@@ -1,8 +1,11 @@
+from __future__ import annotations
+import json
 from django.shortcuts import render, redirect
 from django.views import View
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
+from requests import get
 from perfil import perfil_service
 from .models import Agendamento
 from perfil.models import PerfilUsuario
@@ -10,6 +13,7 @@ from . import agenda_service
 from datetime import datetime, timedelta
 from django.contrib import messages
 from django.views.generic.list import ListView
+from .models import fila_mensagens
 
 
 class DispachLoginRequired(View):
@@ -152,11 +156,8 @@ class Marcar(View):
                                                     horario_inicio_fim, 
                                                     self.request)
         
-        agenda_service.Agenda_Service().add_mensagem_fila(user, 
-                                                           profissional, 
-                                                           data_evento, 
-                                                           horario_inicio_fim, 
-                                                           self.request)         
+      #  fila_mensagens[agendamento.id] = agenda_service.Agenda_Service().add_mensagem_fila(user, 
+        agenda_service.Agenda_Service().envia_sms(user, data_evento, agendamento, horario_inicio_fim)   
        
         context = {
             'agendamento': agendamento,
@@ -192,11 +193,28 @@ class Tabela(DispachLoginRequired, ListView):
     #     context['agendamentos'] = agendamentos
     #     return context
 
+
 class Mensagens(View):
     
-    from .models import fila_mensagens
-    
     def get(self, *args, **kwargs):
-        mensagens = self.fila_mensagens
+        mensagens = fila_mensagens.values()
         json_data = serializers.serialize('json', mensagens)
+        json_data = json.loads(json_data)
         return JsonResponse(json_data, safe=False)
+
+
+class Atualiza_Sms(View):
+
+    def get(self, *args, **kwargs):
+        agendamento_id = self.request.GET.get('agendamento_id')
+        if agendamento_id is not None:
+            try:
+                agendamento_id = int(agendamento_id)
+                if agendamento_id in fila_mensagens:
+                    fila_mensagens.pop(agendamento_id)
+                    return JsonResponse({'message': 'Agendamento removido da fila'}, safe=False)
+            except ValueError:
+                return JsonResponse({'message': 'Erro ao remover agendamento, valor inválido'}, safe=False)
+    
+        return JsonResponse({'message': 'Agendamento não foi removido da fila'}, safe=False)
+    

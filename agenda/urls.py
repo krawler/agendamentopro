@@ -11,4 +11,5 @@ urlpatterns = [
     path('marcar', views.Marcar.as_view(), name="marcar"),
     path('tabela', views.Tabela.as_view(), name="tabela"),
     path('mensagens', views.Mensagens.as_view(), name="mensagens"),
+    path('atualizasms', views.Atualiza_Sms.as_view(), name="atualizasms"),
 ]
