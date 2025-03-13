@@ -280,5 +280,3 @@ class Agenda_Service():
         response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
 
         print(response.text.encode('utf8'))
-
-        #todo: verifica inicio de numero e adiciona +55    
