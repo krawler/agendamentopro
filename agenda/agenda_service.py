@@ -204,45 +204,6 @@ class Agenda_Service():
                           request=request)
         py_email.enviar()
         
-    def envia_whatsapp(self, user, profissional, data_evento, horario_inicio_fim, request):
-        data_evento = datetime.strptime(data_evento, '%Y-%m-%d')
-        data_evento = data_evento.strftime('%d/%m/%Y')
-        tp_horario_inicio_fim = eval(horario_inicio_fim)
-        horario_inicio = tp_horario_inicio_fim[0]
-        horario_fim = tp_horario_inicio_fim[1]
-        telefone = PerfilUsuario.objects.get(usuario=user).telefone
-        #todo: verifica inicio de numero e adiciona +55
-        telefone = f'+55{telefone}'
-        mensagem_texto = f'''Ol&aacute; {user.first_name}, seu agendamento no dia {data_evento}, 
-                            das {horario_inicio} as {horario_fim},  foi conclu&iacute;do com sucesso.'''
-        
-        py_whatsapp.enviar_mensagem_whatsapp(telefone, mensagem_texto)
-    
-    def get_mensagens_fila(self):
-        return MensagemFila.objects.all()        
-    
-    def add_mensagem_fila(self, user, profissional, data_evento, horario_inicio_fim, agendamento):
-        tp_horario_inicio_fim = eval(horario_inicio_fim)
-        horario_inicio = tp_horario_inicio_fim[0]    
-        horario_fim = tp_horario_inicio_fim[1]
-        
-        telefone = PerfilUsuario.objects.get(usuario=user).telefone
-        telefone = f'{telefone}'
-        
-        mensagem_texto = f'''
-                         Ola {user.first_name}, seu agendamento no dia {data_evento}, das {horario_inicio} as {horario_fim}, foi concluido com sucesso.
-                         '''
-        mensagem_fila = MensagemFila(agendamento=agendamento,
-                                     user=user, 
-                                     profissional=profissional, 
-                                     mensagem=mensagem_texto,
-                                     telefone=telefone,
-                                     telefone_profissional="14996064031")
-        
-        fila_mensagens[agendamento.id] = mensagem_fila
-        
-        return fila_mensagens
-        
     def envia_sms(self, user, data_evento, agendamento, horario_inicio_fim):
         data_evento = datetime.strptime(data_evento, '%Y-%m-%d')
         data_evento = data_evento.strftime('%d/%m/%Y')
