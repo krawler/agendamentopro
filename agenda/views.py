@@ -13,7 +13,6 @@ from . import agenda_service
 from datetime import datetime, timedelta
 from django.contrib import messages
 from django.views.generic.list import ListView
-from .models import fila_mensagens
 
 
 class DispachLoginRequired(View):
@@ -135,6 +134,11 @@ class Marcar(View):
         data_evento = self.request.POST.get('data_evento')
         horario_inicio_fim = self.request.POST.get('horario_inicio_fim')
         id_profissional = self.request.POST.get('profissional')
+        
+        if self.request.session.get('horario_inicio_fim') == horario_inicio_fim:
+            return redirect('agenda:marcar')
+        else:    
+            self.request.session['horario_inicio_fim'] = horario_inicio_fim
         
         if id_profissional is None or id_profissional == '':
             messages.error(
