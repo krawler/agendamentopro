@@ -7,11 +7,10 @@ import json
 from agenda.email.py_email import PyEmail
 from agenda.whatsapp import py_whatsapp
 from perfil.models import PerfilUsuario
-from .models import Agendamento, MensagemFila
+from .models import Agendamento
 from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import User
 from django.db.models import Q
-from .models import fila_mensagens
 
 
 class Agenda_Service():
