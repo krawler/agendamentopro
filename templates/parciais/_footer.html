@@ -30,6 +30,7 @@
 
         $("#id_password").passwordStrengthIndicator();
         $("#id_password2").passwordStrengthIndicator();
+        
     });  
 </script>
 
@@ -73,5 +74,9 @@
         } 
     }
     
+    $(document).ready(function(){
+        $(".contents-events .hour:lt(8)").remove();
+        $(".contents-events .hour:gt(12)").remove();
+    });
     
 </script>
