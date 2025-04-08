@@ -51,6 +51,7 @@ class PerfilUsuario(models.Model):
     )
     telefone = models.CharField(null=True, max_length=50)
     perfil_endereco = models.BooleanField(default=True)
+    usa_email = models.BooleanField(default=True)
     
     def __str__(self) :
         return f'{self.usuario}'
@@ -62,14 +63,26 @@ class PerfilUsuario(models.Model):
         verbose_name = 'Perfil'
         verbose_name_plural = 'Perfis'
 
+
 class PasswordResetCode(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     codigo = models.CharField(max_length=50, unique=True)
     criado_em = models.DateTimeField(auto_now_add=True)
     token = models.CharField(max_length=50, unique=False)
 
+
 class ListaDesejoProduto(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     produto = models.ForeignKey(Produto, on_delete=models.SET_NULL, null=True)
     adicionado_em = models.DateTimeField(auto_now_add=True)
     desativado = models.BooleanField(default=False)
+
+    
+class PushSubscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    endpoint = models.CharField(max_length=255)
+    p256dh = models.TextField()
+    auth = models.TextField()
+
+    def __str__(self):
+        return f"Subscription for {self.user.username}"
