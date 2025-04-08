@@ -33,8 +33,12 @@
         
     });  
 </script>
-
 {% endif %}
+
+
+{% if subscricao_notificacao %}
+    <script src="{% static 'assets/custom/js/user_notification.js' %} "></script>    
+{% endif %}    
 
 <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
 <script>
@@ -73,10 +77,5 @@
             calendarInstance1.turnOnFullScreen();    
         } 
     }
-    
-    $(document).ready(function(){
-        $(".contents-events .hour:lt(8)").remove();
-        $(".contents-events .hour:gt(12)").remove();
-    });
-    
+        
 </script>
