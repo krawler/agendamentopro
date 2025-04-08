@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block conteudo %}
+
+{% load static %}
+
+<script src="{% static 'assets/custom/js/form_userperfil.js' %} "></script>
+
+<div class="row ml-5">
+    
+    <div class="col-lg mt-3">
+        {% block titulocadastro %}
+            <h4>Cadastro de configuração</h4>
+        {% endblock %}
+
+        <form method="POST" action="">            
+            {% csrf_token %}          
+            {{configuracao_form|crispy}}
+            <div class="row">
+                <div class="col">
+                    <button type="submit" id="enviar_form_perfil"
+                        class="btn btn-primary btn-lg btn-cadastro-perfil">
+                        Enviar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
