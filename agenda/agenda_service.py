@@ -2,15 +2,13 @@ import json
 import random
 import string
 import requests
-import json
-
 from agenda.email.py_email import PyEmail
-from agenda.whatsapp import py_whatsapp
 from perfil.models import PerfilUsuario
-from .models import Agendamento
-from datetime import datetime, timedelta, timezone
+from .models import Agendamento, Configuracao
+from datetime import date, datetime, timedelta, timezone
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.conf import settings
 
 
 class Agenda_Service():
@@ -47,25 +45,38 @@ class Agenda_Service():
         horario_inicio = tupla_horarios[0]
         horario_fim = tupla_horarios[1]
         
-        json_event = self.create_json_evento(usuario.username,  
-                                             data_evento.day,                                       
-                                             data_evento.month,                                              
-                                             data_evento.year, 
-                                             horario_inicio, 
-                                             horario_fim, 
-                                             id_jsondiv_evento)
         hora_inicio = datetime.strptime(f"{data_evento.year}-{data_evento.month}-{data_evento.day} {horario_inicio}", "%Y-%m-%d %H:%M")
 
         hora_final = datetime.strptime(f"{data_evento.year}-{data_evento.month}-{data_evento.day} {horario_fim}", "%Y-%m-%d %H:%M")
-        #datetime_horario_fim = data_evento.strptime(horario_fim, '%H:%M')
-        #datetime_horario_fim = datetime_horario_fim + timedelta(hours=+3)
+
+        config = Configuracao.objects.first()
+        if config.tipo_ambiente == 'REMOTO':
+            hora_inicio_json = hora_inicio - timedelta(hours=3)
+            hora_final_json = hora_final - timedelta(hours=3)
+            json_event = self.create_json_evento(usuario.username,  
+                                                 data_evento.day,                                       
+                                                 data_evento.month,                                              
+                                                 data_evento.year, 
+                                                 horario_inicio, 
+                                                 horario_fim, 
+                                                 id_jsondiv_evento)
+        else:
+            json_event = self.create_json_evento(usuario.username,  
+                                                 data_evento.day,                                       
+                                                 data_evento.month,                                              
+                                                 data_evento.year, 
+                                                 horario_inicio, 
+                                                 horario_fim, 
+                                                 id_jsondiv_evento)            
+        
         agenda = Agendamento(pessoa=usuario,
                              profissional=profissional, 
                              data_evento=hora_inicio.date(), 
                              hora_inicio=hora_inicio, 
                              hora_final=hora_final,
                              json_evento=json_event,
-                             id_jsondiv_evento=id_jsondiv_evento)
+                             id_jsondiv_evento=id_jsondiv_evento,
+                             titulo=usuario.username)
         agenda.save()
 
         return agenda
@@ -117,10 +128,15 @@ class Agenda_Service():
         
         if hora_inicio > hora_fim:
             raise ValueError("A hora de início deve ser anterior à hora de fim.")
-
+        
+        config = Configuracao.objects.first()
+        if config.tipo_ambiente == 'REMOTO':
+            datetime_now = datetime.now() - timedelta(hours=3)
+        else:
+            datetime_now = datetime.now()
         intervalos = []
         while hora_inicio < hora_fim:
-            if hora_inicio > datetime.now():    
+            if hora_inicio > datetime_now:    
                 hasAgendamento = self.get_agendamento_by_time(data_evento=data_evento, 
                                                 hora_inicio=hora_inicio, 
                                                 hora_final=(hora_inicio + timedelta(minutes=50)),
@@ -240,3 +256,5 @@ class Agenda_Service():
         response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
 
         print(response.text.encode('utf8'))
+      
+   

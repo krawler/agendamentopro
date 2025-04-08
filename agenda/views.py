@@ -13,6 +13,9 @@ from . import agenda_service
 from datetime import datetime, timedelta
 from django.contrib import messages
 from django.views.generic.list import ListView
+from django import forms
+
+from agenda import models
 
 
 class DispachLoginRequired(View):
@@ -104,26 +107,41 @@ class Marcar(View):
     def get(self, *args, **kwargs):
         
         user = self.request.user
+        is_sunday = False
         if not user.is_authenticated:
             return redirect('perfil:login')
         data_evento = self.request.GET.get('data_evento')
         if data_evento is None:
             data_evento = datetime.now()
+            if data_evento.weekday() == 6:
+                is_sunday = True
         else:
-            data_evento = datetime.strptime(data_evento, "%Y-%m-%d")    
+            data_evento = datetime.strptime(data_evento, "%Y-%m-%d")   
+        if data_evento.weekday() == 6 and is_sunday == False:
+            messages.error(self.request, 'O dia da semana escolhido é domingo, por favor escolha outro dia.')
+            return redirect('agenda:marcar')     
         
-        profissional = self.request.GET.get('profissional')
-        profissional = User.objects.filter(id=profissional).first()
+        profissional_id = self.request.GET.get('profissional')
+        profissional = User.objects.filter(id=profissional_id).first()
         
         if profissional is not None:    
-            horarios = agenda_service.Agenda_Service().gera_intervalos('09:00', '21:00', data_evento, profissional)
+            horarios = agenda_service.Agenda_Service().gera_intervalos('09:00', 
+                                                                       '20:00', 
+                                                                       data_evento, 
+                                                                       profissional)
         else:
             horarios = ''
+        
+        subscricao_notificacao = False
+        if self.request.session.get('subscricao_notificacao') == True:
+            subscricao_notificacao = True 
+            self.request.session['subscricao_notificacao'] = False
         
         context = {
             'horarios' : horarios,
             'profissionais' : perfil_service.PerfilService().get_profissionais(),
-            'profissional_selecionado' : profissional  
+            'profissional_selecionado' : profissional,
+            'subscricao_notificacao' : subscricao_notificacao
         }
 
         return render(self.request, 'agenda/novo_horario.html', context)
@@ -153,22 +171,30 @@ class Marcar(View):
                                                                                  data_evento, 
                                                                                  user, 
                                                                                  profissional)
-
-        agenda_service.Agenda_Service().envia_email(user, 
-                                                    profissional, 
-                                                    data_evento, 
-                                                    horario_inicio_fim, 
-                                                    self.request)
+        perfil = PerfilUsuario.objects.get(usuario=user)
+        if perfil.usa_email == True:
+            agenda_service.Agenda_Service().envia_email(user, 
+                                                        profissional, 
+                                                        data_evento, 
+                                                        horario_inicio_fim, 
+                                                        self.request)
+        else:    
+            retorno_sms = agenda_service.Agenda_Service().envia_sms(user, data_evento, agendamento, horario_inicio_fim)   
+            if retorno_sms == "perfil_nao_encontrado":
+                messages.error(
+                        self.request,
+                        'Perfil não encontrado, favor verifique seu cadastro ou entre em contato conosco'
+                )
+                return redirect('agenda:marcar')
         
-        agenda_service.Agenda_Service().envia_sms(user, data_evento, agendamento, horario_inicio_fim)   
-       
         context = {
             'agendamento': agendamento,
+            'perfil': perfil
         }
         
         return render(self.request, 
-                      'agenda/agendamento_concluido.html', 
-                      context)
+                        'agenda/agendamento_concluido.html', 
+                        context)
 
 
 class Tabela(DispachLoginRequired, ListView):
@@ -209,15 +235,59 @@ class Mensagens(View):
 class Atualiza_Sms(View):
 
     def get(self, *args, **kwargs):
-        agendamento_id = self.request.GET.get('agendamento_id')
-        if agendamento_id is not None:
-            try:
-                agendamento_id = int(agendamento_id)
-                if agendamento_id in fila_mensagens:
-                    fila_mensagens.pop(agendamento_id)
-                    return JsonResponse({'message': 'Agendamento removido da fila'}, safe=False)
-            except ValueError:
-                return JsonResponse({'message': 'Erro ao remover agendamento, valor inválido'}, safe=False)
-    
         return JsonResponse({'message': 'Agendamento não foi removido da fila'}, safe=False)
+
+class ConfiguracaoForm(forms.ModelForm):
     
+    email_host_password = forms.CharField(
+        required=False,
+        widget=forms.PasswordInput(),
+        label='Senha do email de envio',
+    )
+
+    tempo_duracao_evento = forms.IntegerField(
+        required=True,
+        widget=forms.NumberInput(),
+        label='Tempo duraçao do evento'
+    )
+    
+    tipo_ambiente = forms.CharField(
+        required=False,
+        widget=forms.TextInput(),
+        label='tipo de ambiente',
+    )
+     
+    class Meta:
+        model = models.Configuracao
+        fields = ('url_atualiza_json', 'tempo_duracao_evento', 'url_base', 'email_host', 
+                  'email_smtp', 'email_port', 'email_host_password', 'tipo_ambiente',
+                  'vapid_public_key', 'vapid_private_key', 'vapid_subject')
+ 
+class ConfiguracaoView(View):
+    
+    def get(self, *args, **kwargs):
+        configuracao_db = models.Configuracao.objects.get(id=1)
+        context = {
+            'configuracao_form' : ConfiguracaoForm(instance=configuracao_db)
+        }
+        return render(self.request, 'agenda/configuracao.html', context)
+    
+    def post(self, *args, **kwargs):
+        configuracao_db = models.Configuracao.objects.get(id=1)
+        configuracao_form = ConfiguracaoForm(instance=self.request.POST)
+        if configuracao_form.is_valid():
+            configuracao_db.url_atualiza_json = configuracao_form.cleaned_data['url_atualiza_json']
+            configuracao_db.tempo_duracao_evento = configuracao_form.cleaned_data['tempo_duracao_evento']
+            configuracao_db.url_base = configuracao_form.cleaned_data['url_base']
+            configuracao_db.email_host = configuracao_form.cleaned_data['email_host']
+            configuracao_db.email_smtp = configuracao_form.cleaned_data['email_smtp']
+            configuracao_db.email_port = configuracao_form.cleaned_data['email_port']
+            configuracao_db.email_host_password = configuracao_form.cleaned_data['email_host_password']
+            configuracao_db.tipo_ambiente = configuracao_form.cleaned_data['tipo_ambiente']
+            configuracao_db.save()
+            return redirect('agenda:configuracao')
+        else:
+            context = {
+                'configuracaoForm' : configuracao_form
+            }
+            return render(self.request, 'agenda/configuracao.html', context)
