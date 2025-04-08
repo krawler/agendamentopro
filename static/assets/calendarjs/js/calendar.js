@@ -3104,6 +3104,7 @@ function calendarJs(ol, pl, ql) {
       f.appendChild(g);
       e = lb(e, c);
     }
+ 
   }
   function wg(a, c) {
     var d = Ze(c);
@@ -5489,9 +5490,9 @@ function calendarJs(ol, pl, ql) {
                       if (jsonData.length > 0){
                           for (let i = 0; i < jsonDataobj.length; i++) {
                           if(jsonDataobj[i].fields.json_evento != undefined){
-                            let json_event = JSON.parse(jsonDataobj[i].fields.json_evento);
-                            u.addEvent(json_event, !1, !1, !1);  
-                          } 
+                              let json_event = JSON.parse(jsonDataobj[i].fields.json_evento);
+                              u.addEvent(json_event, !1, !1, !1);  
+                            } 
                           }
                       }                              
                     }
@@ -5505,8 +5506,6 @@ function calendarJs(ol, pl, ql) {
   }
 
   function AdicionaAgendamento(jsonEvent){
-
-    console.log(jsonEvent);
 
     id_div_evento = jsonEvent.id;
     var strJsonEvent = JSON.stringify(jsonEvent);
@@ -5604,4 +5603,10 @@ function AtualizaAgendamento(jsonEvent){
         }
     });
 }
+
+function ocultaHorarios(){
+  $(".contents-events .hour:lt(7)").hide();
+  $(".contents-events .hour:gt(20)").hide();
+}
+
 };
