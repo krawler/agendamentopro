@@ -14,5 +14,6 @@ urlpatterns = [
     path('reset-password/', views.Reset_password.as_view(), name='reset_password'),
     path('reset-password/<uidb64>/<token>/', views.Reset_password.as_view(), name='password_reset_confirm'),
     path('lista-desejos/', views.ListaDesejoProduto.as_view(), name="lista_desejos"),
-    path('novo-cadastro/', views.NovoCadastro.as_view(), name="novo_cadastro")
+    path('novo-cadastro/', views.NovoCadastro.as_view(), name="novo_cadastro"),
+    path('save-subscription/', views.SaveSubscription.as_view(), name="save_subscription")
 ]

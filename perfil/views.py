@@ -1,9 +1,10 @@
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.views.generic import ListView
 from django.views import View
 from datetime import datetime
 from . import forms
-from .models import PerfilUsuario, PasswordResetCode, ListaDesejoProduto as ListaDesejo
+from .models import PerfilUsuario, PasswordResetCode, ListaDesejoProduto as ListaDesejo, PushSubscription
 from produto.models import Produto
 from produto.produto_service import ProdutoService
 from .perfil_service import PerfilService
@@ -17,6 +18,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.views.decorators.csrf import csrf_exempt
 import copy
 import json
 import random
@@ -44,11 +46,10 @@ class BasePerfil(View):
                                 perfil=self.perfil) 
         
             self.context = {
-                'userform': 
-                            forms.UserForm(
-                                data=self.request.POST or None, 
-                                usuario=self.request.user,
-                                instance=self.request.user,    
+                'userform': forms.UserForm(
+                                    data=self.request.POST or None, 
+                                    usuario=self.request.user,
+                                    instance=self.request.user,    
                             ),
                 'perfilform': perfilForm,
                 'pagina_cadastro': True 
@@ -137,8 +138,9 @@ class Criar(BasePerfil):
         
         self.request.session['carrinho'] = self.carrinho
         self.request.session.save()      
+        self.request.session['subscricao_notificacao'] = True
         msg = 'Seu cadastro foi realizado com sucesso'  
-        messages.success(self.request, msg)  
+        messages.success(self.request, msg)        
 
         if self.request.session.get('url_destino') is not None:
             return redirect(self.request.session['url_destino'])
@@ -405,3 +407,16 @@ class NovoCadastro(View):
     
     def get(self, *args, **kwargs):
         return render(self.request, 'perfil/novo_cadastro.html')
+    
+    
+class SaveSubscription(View):
+    
+    def post(self, *args, **kwargs):
+        data = json.loads(self.request.body)
+        PushSubscription.objects.create(
+            user=self.request.user,
+            endpoint=data['endpoint'],
+            p256dh=data['keys']['p256dh'],
+            auth=data['keys']['auth']
+        )
+        return JsonResponse({'success': True})

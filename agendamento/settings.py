@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+from __future__ import annotations
 
 from pathlib import Path
 from django.contrib.messages import constants
@@ -43,9 +44,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # TODO: Remover debug toolbar
     'crispy_forms',
-    "crispy_bootstrap4"
+    "crispy_bootstrap4",
+    "django_tasks",
+    "django_tasks.backends.database",
+    "django_apscheduler"
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
@@ -59,7 +62,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-     # TODO: remover debug toolbar
 ]
 
 ROOT_URLCONF = 'agendamento.urls'
@@ -164,29 +166,41 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 INTERNAL_IPS = [
     '127.0.0.1',
-]
+]  
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': os.path.join(BASE_DIR, 'logs', 'debug.log'),
-#             'formatter': 'verbose'
-#         },
-#     },
-#     'formatters': {
-#         'verbose': {
-#             'format': '%(asctime)s %(levelname)s %(module)s %(process)d %(thread)d %(message)s'
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': False,
-#         },
-#     },
-# }
+TASKS = {
+    "default": {
+        "BACKEND": "django_tasks.backends.database.DatabaseBackend"
+    }
+}
+
+import os
+
+SCHEDULER_CONFIG = {
+    "apscheduler.jobstores.default": {
+        "class": "django_apscheduler.jobstores:DjangoJobStore"
+    },
+    'apscheduler.executors.default': {
+        'class': 'apscheduler.executors.pool:ThreadPoolExecutor',
+        'max_workers': 20
+    },
+    "apscheduler.timezone": os.environ.get("TZ", "UTC"),
+    'apscheduler.job_defaults': {
+        'coalesce': False,
+        'max_instances': 1
+    },
+}
+
+LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'root': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    }
